@@ -1,0 +1,84 @@
+
+<!-- cart.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cart - TARKA</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Animated Background -->
+    <div class="bg-animation">
+        <div class="floating-shape"></div>
+        <div class="floating-shape"></div>
+        <div class="floating-shape"></div>
+        <div class="floating-shape"></div>
+    </div>
+
+    <!-- Navigation Section -->
+    <nav class="navbar">
+        <div class="container">
+            <div class="nav-content">
+                <a href="home.html" class="logo">
+                    <img src="logo (2).png" alt="Tarka Logo" class="logo-img"> TARKA</a>
+                <ul class="nav-links">
+                    <li><a href="home.html">Home</a></li>
+                    <li><a href="menu.html">Menu</a></li>
+                    <li><a href="cart.html">Cart (<span id="cart-count">0</span>)</a></li>
+                    <li><a href="tracking.html">Track Order</a></li>
+                    <li><a href="login.html" class="btn btn-primary">Login</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Cart Page Content -->
+    <div class="page-content active" style="background: linear-gradient(135deg, rgba(255, 215, 0, 0.1), rgba(245, 91, 35, 0.1)); min-height: 100vh; padding-top: 2rem;">
+        <div class="container cart-container">
+            <!-- Page Title -->
+            <h2 class="section-title">Your Cart</h2>
+            <!-- Cart Items Container -->
+            <div id="cart-items">
+                <p style="text-align: center; color: var(--text-light); margin: 3rem 0;">Your cart is empty</p>
+            </div>
+            <!-- Cart Total Section -->
+            <div class="cart-total" id="cart-total" style="display: none;">
+                <h3>Total: $<span id="total-amount">0.00</span></h3>
+                <a href="checkout.html" class="btn btn-primary" style="margin-top: 1rem; text-decoration: none;">Proceed to Checkout</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer Section -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>TARKA</h3>
+                    <p>Delivering happiness, one meal at a time. Experience the finest cuisine with our premium food delivery service.</p>
+                </div>
+                <div class="footer-section">
+                    <h3>Quick Links</h3>
+                    <p><a href="menu.html" style="color: var(--text-light); text-decoration: none;">Menu</a></p>
+                    <p><a href="tracking.html" style="color: var(--text-light); text-decoration: none;">Track Order</a></p>
+                    <p><a href="home.html" style="color: var(--text-light); text-decoration: none;">About Us</a></p>
+                </div>
+                <div class="footer-section">
+                    <h3>Contact</h3>
+                    <p>📞 +1 (555) 123-4567</p>
+                    <p>📧 hello@tarka.com</p>
+                    <p>📍 123 Food Street, City</p>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2024 TARKA. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- JavaScript -->
+    <script src="script.js"></script>
+</body>
+</html>

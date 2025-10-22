@@ -1,0 +1,111 @@
+<!-- checkout.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Checkout - TARKA</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Animated Background -->
+    <div class="bg-animation">
+        <div class="floating-shape"></div>
+        <div class="floating-shape"></div>
+        <div class="floating-shape"></div>
+        <div class="floating-shape"></div>
+    </div>
+
+    <!-- Navigation Section -->
+    <nav class="navbar">
+        <div class="container">
+            <div class="nav-content">
+                <a href="home.html" class="logo">
+                       <img src="logo (2).png" alt="Tarka Logo" class="logo-img"> TARKA</a>
+                <ul class="nav-links">
+                    <li><a href="home.html">Home</a></li>
+                    <li><a href="menu.html">Menu</a></li>
+                    <li><a href="cart.html">Cart (<span id="cart-count">0</span>)</a></li>
+                    <li><a href="tracking.html">Track Order</a></li>
+                    <li><a href="login.html" class="btn btn-primary">Login</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Checkout Page Content -->
+    <div class="page-content active" style="background: linear-gradient(135deg, rgba(102, 126, 234, 0.1), rgba(118, 75, 162, 0.1)); min-height: 100vh; padding-top: 2rem;">
+        <div class="container">
+            <!-- Page Title -->
+            <h2 class="section-title" style="margin-top: 2rem;">Checkout</h2>
+            <div style="max-width: 600px; margin: 0 auto;">
+                <!-- Checkout Form -->
+                <form class="login-form" onsubmit="handleCheckout(event)" style="max-width: none;">
+                    <h3 style="color: var(--primary-orange); margin-bottom: 1.5rem;">Delivery Information</h3>
+                    <!-- Full Name Input -->
+                    <div class="form-group">
+                        <label for="fullName">Full Name</label>
+                        <input type="text" id="fullName" placeholder="Enter your full name" required>
+                    </div>
+                    <!-- Phone Number Input -->
+                    <div class="form-group">
+                        <label for="phone">Phone Number</label>
+                        <input type="tel" id="phone" placeholder="Enter your phone number" required>
+                    </div>
+                    <!-- Address Input -->
+                    <div class="form-group">
+                        <label for="address">Delivery Address</label>
+                        <input type="text" id="address" placeholder="Enter your delivery address" required>
+                    </div>
+                    <!-- Payment Method Selection -->
+                    <div class="form-group">
+                        <label for="payment">Payment Method</label>
+                        <select id="payment" style="width: 100%; padding: 15px 20px; border: 2px solid rgba(233, 236, 239, 0.8); border-radius: 15px; background: rgba(255, 255, 255, 0.9); transition: all 0.3s ease;" required>
+                            <option value="">Select Payment Method</option>
+                            <option value="card">Credit/Debit Card</option>
+                            <option value="cash">Cash on Delivery</option>
+                            <option value="upi">UPI Payment</option>
+                        </select>
+                    </div>
+                    <!-- Order Total Display -->
+                    <div class="cart-total">
+                        <h3>Order Total: $<span id="checkout-total">0.00</span></h3>
+                    </div>
+                    <!-- Place Order Button -->
+                    <button type="submit" class="btn btn-primary" style="width: 100%;">Place Order</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer Section -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>TARKA</h3>
+                    <p>Delivering happiness, one meal at a time. Experience the finest cuisine with our premium food delivery service.</p>
+                </div>
+                <div class="footer-section">
+                    <h3>Quick Links</h3>
+                    <p><a href="menu.html" style="color: var(--text-light); text-decoration: none;">Menu</a></p>
+                    <p><a href="tracking.html" style="color: var(--text-light); text-decoration: none;">Track Order</a></p>
+                    <p><a href="home.html" style="color: var(--text-light); text-decoration: none;">About Us</a></p>
+                </div>
+                <div class="footer-section">
+                    <h3>Contact</h3>
+                    <p>📞 +1 (555) 123-4567</p>
+                    <p>📧 hello@tarka.com</p>
+                    <p>📍 123 Food Street, City</p>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2024 TARKA. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- JavaScript -->
+    <script src="script.js"></script>
+</body>
+</html>

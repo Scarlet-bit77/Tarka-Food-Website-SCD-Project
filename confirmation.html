@@ -1,0 +1,89 @@
+<!-- confirmation.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Order Confirmed - TARKA</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Animated Background -->
+    <div class="bg-animation">
+        <div class="floating-shape"></div>
+        <div class="floating-shape"></div>
+        <div class="floating-shape"></div>
+        <div class="floating-shape"></div>
+    </div>
+
+    <!-- Navigation Section -->
+    <nav class="navbar">
+        <div class="container">
+            <div class="nav-content">
+                <a href="home.html" class="logo">
+                    <img src="logo (2).png" alt="Tarka Logo" class="logo-img"> TARKA</a>
+                <ul class="nav-links">
+                    <li><a href="home.html">Home</a></li>
+                    <li><a href="menu.html">Menu</a></li>
+                    <li><a href="cart.html">Cart (<span id="cart-count">0</span>)</a></li>
+                    <li><a href="tracking.html">Track Order</a></li>
+                    <li><a href="login.html" class="btn btn-primary">Login</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Order Confirmation Page Content -->
+    <div class="page-content active" style="background: linear-gradient(135deg, rgba(255, 215, 0, 0.2), rgba(245, 91, 35, 0.2)); min-height: 100vh; display: flex; align-items: center;">
+        <div class="container">
+            <div style="text-align: center; padding: 4rem 0;">
+                <!-- Success Animation -->
+                <div style="font-size: 5rem; margin-bottom: 2rem; animation: bounce 2s infinite;">✅</div>
+                <!-- Confirmation Message -->
+                <h2 style="color: var(--primary-orange); margin-bottom: 1rem; font-size: 2.5rem;">Order Confirmed!</h2>
+                <p style="margin-bottom: 2rem; font-size: 1.2rem;">Thank you for your order. Your delicious food is being prepared.</p>
+                <!-- Order Details Card -->
+                <div style="background: rgba(255, 243, 205, 0.9); backdrop-filter: blur(10px); padding: 2.5rem; border-radius: 20px; margin: 2rem auto; max-width: 450px; box-shadow: 0 10px 30px rgba(0,0,0,0.1);">
+                    <h3 style="margin-bottom: 1rem;">Order Details</h3>
+                    <p style="margin-bottom: 0.5rem;"><strong>Order ID:</strong> <span id="order-id">#12345</span></p>
+                    <p><strong>Estimated Delivery:</strong> <span id="delivery-time">30-45 minutes</span></p>
+                </div>
+                <!-- Action Buttons -->
+                <a href="tracking.html" class="btn btn-primary" style="margin-right: 1rem; text-decoration: none;">Track Order</a>
+                <a href="home.html" class="btn btn-secondary" style="text-decoration: none;">Continue Shopping</a>
+            </div>
+        </div>
+    </div>
+
+      <!-- Footer Section -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>TARKA</h3>
+                    <p>Delivering happiness, one meal at a time. Experience the finest cuisine with our premium food delivery service.</p>
+                </div>
+                <div class="footer-section">
+                    <h3>Quick Links</h3>
+                    <p><a href="menu.html" style="color: var(--text-light); text-decoration: none;">Menu</a></p>
+                    <p><a href="tracking.html" style="color: var(--text-light); text-decoration: none;">Track Order</a></p>
+                    <p><a href="home.html" style="color: var(--text-light); text-decoration: none;">About Us</a></p>
+                </div>
+                <div class="footer-section">
+                    <h3>Contact</h3>
+                    <p>📞 +1 (555) 123-4567</p>
+                    <p>📧 hello@tarka.com</p>
+                    <p>📍 123 Food Street, City</p>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2024 TARKA. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    
+    <!-- JavaScript -->
+    <script src="script.js"></script>
+</body>
+</html>
