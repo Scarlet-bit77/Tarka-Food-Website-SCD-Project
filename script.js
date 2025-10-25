@@ -4,36 +4,149 @@ let cart = [];
 let currentOrder = null;
 let isLoggedIn = false;
 
-// ===== MENU DATA =====
-const menuItems = [
-    { id: 1, name: "Margherita Pizza", price: 12.99, category: "pizza", emoji: "🍕" },
-    { id: 2, name: "Pepperoni Pizza", price: 15.99, category: "pizza", emoji: "🍕" },
-    { id: 3, name: "Classic Burger", price: 9.99, category: "burger", emoji: "🍔" },
-    { id: 4, name: "Cheese Burger", price: 11.99, category: "burger", emoji: "🍔" },
-    { id: 5, name: "Chicken Biryani", price: 14.99, category: "Biryani", emoji: "🍛" },
-    { id: 6, name: "Butter Chicken", price: 16.99, category: "Biryani", emoji: "🍛" },
-    { id: 7, name: "Chocolate Cake", price: 6.99, category: "dessert", emoji: "🍰" },
-    { id: 8, name: "Ice Cream", price: 4.99, category: "dessert", emoji: "🍦" }
-];
-
-// ===== MENU FUNCTIONS =====
-function loadMenu(filter = null) {
-    const menuGrid = document.getElementById('menu-grid');
-    if (!menuGrid) return;
-    
-    const filteredItems = filter ? menuItems.filter(item => item.category === filter) : menuItems;
-    
-    menuGrid.innerHTML = filteredItems.map(item => `
-        <div class="food-card">
-            <div class="food-image">${item.emoji}</div>
-            <div class="food-info">
-                <h3>${item.name}</h3>
-                <p class="food-price">$${item.price}</p>
-                <button class="btn btn-primary" onclick="addToCart(${item.id})" style="margin-top: 1rem;">Add to Cart</button>
-            </div>
-        </div>
-    `).join('');
-}
+ // ===== MENU DATA =====
+        const menuItems = [
+            // Pizza Category
+            { id: 1, name: "Chicken Tikka Pizza", price: 1899, category: "pizza", emoji: "🍕" },
+            { id: 2, name: "Fajita Pizza", price: 1799, category: "pizza", emoji: "🍕" },
+            { id: 3, name: "Margherita Pizza", price: 1499, category: "pizza", emoji: "🍕" },
+            { id: 4, name: "Pepperoni Pizza", price: 1699, category: "pizza", emoji: "🍕" },
+            
+            // Burger Category
+            { id: 5, name: "Zinger Burger", price: 899, category: "burger", emoji: "🍔" },
+            { id: 6, name: "Beef Burger", price: 1199, category: "burger", emoji: "🍔" },
+            { id: 7, name: "Chicken Burger", price: 799, category: "burger", emoji: "🍔" },
+            { id: 8, name: "Fish Burger", price: 999, category: "burger", emoji: "🍔" },
+            
+            // Biryani & Rice Category
+            { id: 9, name: "Chicken Biryani", price: 1299, category: "biryani", emoji: "🍛" },
+            { id: 10, name: "Mutton Biryani", price: 1899, category: "biryani", emoji: "🍛" },
+            { id: 11, name: "Beef Biryani", price: 1599, category: "biryani", emoji: "🍛" },
+            { id: 12, name: "Vegetable Biryani", price: 999, category: "biryani", emoji: "🍛" },
+            { id: 13, name: "Plain Rice", price: 299, category: "biryani", emoji: "🍚" },
+            { id: 14, name: "Pulao", price: 599, category: "biryani", emoji: "🍚" },
+            
+            // Karahi Category
+            { id: 15, name: "Chicken Karahi", price: 1499, category: "karahi", emoji: "🍲" },
+            { id: 16, name: "Mutton Karahi", price: 1999, category: "karahi", emoji: "🍲" },
+            { id: 17, name: "Fish Karahi", price: 1699, category: "karahi", emoji: "🍲" },
+            
+            // Nehari Category
+            { id: 18, name: "Beef Nehari", price: 1599, category: "nehari", emoji: "🍲" },
+            { id: 19, name: "Mutton Nehari", price: 1799, category: "nehari", emoji: "🍲" },
+            { id: 20, name: "Chicken Nehari", price: 1399, category: "nehari", emoji: "🍲" },
+            
+            // Veg & Paneer Category
+            { id: 21, name: "Palak Paneer", price: 899, category: "veg-paneer", emoji: "🥬" },
+            { id: 22, name: "Paneer Tikka", price: 999, category: "veg-paneer", emoji: "🧀" },
+            { id: 23, name: "Dal Makhani", price: 699, category: "veg-paneer", emoji: "🍛" },
+            { id: 24, name: "Mixed Vegetables", price: 599, category: "veg-paneer", emoji: "🥕" },
+            
+            // Curry & Gravies Category
+            { id: 25, name: "Butter Chicken", price: 1299, category: "curry", emoji: "🍛" },
+            { id: 26, name: "Chicken Curry", price: 1199, category: "curry", emoji: "🍛" },
+            { id: 27, name: "Mutton Curry", price: 1599, category: "curry", emoji: "🍛" },
+            { id: 28, name: "Fish Curry", price: 1399, category: "curry", emoji: "🐟" },
+            
+            // Naan & Bread Category
+            { id: 29, name: "Garlic Naan", price: 199, category: "naan", emoji: "🫓" },
+            { id: 30, name: "Butter Naan", price: 149, category: "naan", emoji: "🫓" },
+            { id: 31, name: "Tandoori Roti", price: 99, category: "naan", emoji: "🫓" },
+            { id: 32, name: "Cheese Naan", price: 249, category: "naan", emoji: "🫓" },
+            
+            // BBQ & Grills
+            { id: 33, name: "Chicken Tikka", price: 1299, category: "bbq", emoji: "🍖" },
+            { id: 34, name: "Seekh Kebab", price: 999, category: "bbq", emoji: "🍖" },
+            { id: 35, name: "Malai Boti", price: 1499, category: "bbq", emoji: "🍖" },
+            { id: 36, name: "Beef Boti", price: 1599, category: "bbq", emoji: "🍖" },
+            
+            // Lassi & Drinks Category
+            { id: 37, name: "Sweet Lassi", price: 299, category: "drinks", emoji: "🥛" },
+            { id: 38, name: "Mango Lassi", price: 399, category: "drinks", emoji: "🥭" },
+            { id: 39, name: "Fresh Lime", price: 199, category: "drinks", emoji: "🍋" },
+            { id: 40, name: "Rooh Afza", price: 249, category: "drinks", emoji: "🥤" },
+            
+            // Desserts & Sweets
+            { id: 41, name: "Gulab Jamun", price: 399, category: "dessert", emoji: "🍰" },
+            { id: 42, name: "Kheer", price: 349, category: "dessert", emoji: "🍮" },
+            { id: 43, name: "Ras Malai", price: 449, category: "dessert", emoji: "🍰" },
+            { id: 44, name: "Kulfi", price: 299, category: "dessert", emoji: "🍦" },
+            { id: 45, name: "Jalebi", price: 349, category: "dessert", emoji: "🍯" },
+            
+            // Desi Specials Category
+            { id: 46, name: "Haleem", price: 899, category: "desi-specials", emoji: "🍲" },
+            { id: 47, name: "Paya", price: 1199, category: "desi-specials", emoji: "🍖" },
+            { id: 48, name: "Nihari", price: 1499, category: "desi-specials", emoji: "🍲" },
+            { id: 49, name: "Sajji", price: 1999, category: "desi-specials", emoji: "🍗" }
+        ];
+           const categoryNames = {
+            "pizza": "Pizza",
+            "burger": "Burgers", 
+            "biryani": "Biryani & Rice",
+            "karahi": "Karahi",
+            "nehari": "Nehari",
+            "veg-paneer": "Veg & Paneer",
+            "curry": "Curry & Gravies",
+            "naan": "Naan & Bread",
+            "bbq": "BBQ & Grills",
+            "drinks": "Lassi & Drinks",
+            "dessert": "Desserts & Sweets",
+            "desi-specials": "Desi Specials"
+        };
+          // ===== MENU FUNCTIONS =====
+        function loadMenu(filter = null) {
+            const menuContainer = document.getElementById('menu-container');
+            if (!menuContainer) return;
+            
+            if (filter) {
+                // Show specific category
+                const filteredItems = menuItems.filter(item => item.category === filter);
+                const categoryName = categoryNames[filter] || filter;
+                
+                menuContainer.innerHTML = `
+                    <div class="menu-category">
+                        <h2 class="category-heading">${categoryName}</h2>
+                        <div class="menu-items-row">
+                            ${filteredItems.map(item => createFoodItemHTML(item)).join('')}
+                        </div>
+                    </div>
+                `;
+            } else {
+                // Show all categories
+                const categories = [...new Set(menuItems.map(item => item.category))];
+                
+                menuContainer.innerHTML = categories.map(category => {
+                    const categoryItems = menuItems.filter(item => item.category === category);
+                    const categoryName = categoryNames[category] || category;
+                    
+                    return `
+                        <div class="menu-category">
+                            <h2 class="category-heading">${categoryName}</h2>
+                            <div class="menu-items-row">
+                                ${categoryItems.map(item => createFoodItemHTML(item)).join('')}
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+            }
+        }
+        function createFoodItemHTML(item) {
+            return `
+                <div class="food-item">
+                    <div class="food-image">${item.emoji}</div>
+                    <div class="food-info">
+                        <div class="food-details">
+                            <div class="food-name">${item.name}</div>
+                        </div>
+                        <div class="food-price">Rs${item.price}</div>
+                        <button class="add-to-cart-btn" onclick="addToCart(${item.id})">Add to Cart</button>
+                    </div>
+                </div>
+            `;
+        }
+document.addEventListener('DOMContentLoaded', function() {
+            loadMenu(); // Show all categories by default
+        });
 
 // ===== CART FUNCTIONS =====
 function addToCart(itemId) {
