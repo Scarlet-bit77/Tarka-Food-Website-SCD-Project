@@ -2,12 +2,33 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
+    <meta charset="UTF-8"> 
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Track Order - TARKA</title>
     <link rel="stylesheet" href="style.css">
+
+    <style>
+        /* Video background styling */
+        #bg-video {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            z-index: -1;
+            filter: brightness(0.6);
+        }
+    </style>
 </head>
 <body>
+
+    <!-- 🔹 Background Video (added only this part) -->
+    <video autoplay muted loop id="bg-video">
+        <source src="foodprep.mp4" type="video/mp4">
+        Your browser does not support the video tag.
+    </video>
+<div class="video-overlay"></div>
     <!-- Animated Background -->
     <div class="bg-animation">
         <div class="floating-shape"></div>
@@ -40,10 +61,41 @@
             <h2 class="section-title">Track Your Order</h2>
             <!-- Tracking Content Container -->
             <div id="tracking-content">
-                <p style="text-align: center; color: var(--text-light);">No active orders to track</p>
+                <!-- Tracking Progress Section -->
+<div class="tracking-steps">
+    <div class="tracking-step">
+        <div class="step-circle active">🛒</div>
+        <p>Order Placed</p>
+    </div>
+    <div class="tracking-step">
+        <div class="step-circle">👨‍🍳</div>
+        <p>Preparing</p>
+    </div>
+    <div class="tracking-step">
+        <div class="step-circle">🚚</div>
+        <p>Out for Delivery</p>
+    </div>
+    <div class="tracking-step">
+        <div class="step-circle">🏠</div>
+        <p>Delivered</p>
+    </div>
+</div>
+
+<!-- Progress bar -->
+<div class="progress-bar">
+    <div class="progress"></div>
+</div>
+
+<!-- ETA -->
+<div class="tracking-status">
+    <p>⏱ Estimated Delivery: <strong>25–30 minutes</strong></p>
+    <p>🍴 Your order is being prepared with care!</p>
+</div>
+
             </div>
         </div>
     </div>
+    
 
     <!-- Footer Section -->
     <footer class="footer">
@@ -74,5 +126,6 @@
 
     <!-- JavaScript -->
     <script src="script.js"></script>
+    
 </body>
 </html>
