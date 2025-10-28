@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Menu - TARKA</title>
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="menu.css">
 </head>
 <body>
     <!-- Animated Background -->
@@ -27,25 +27,71 @@
                     <li><a href="menu.html">Menu</a></li>
                     <li><a href="cart.html">Cart (<span id="cart-count">0</span>)</a></li>
                     <li><a href="tracking.html">Track Order</a></li>
-                    <li><a href="login.html" class="btn btn-primary">Login</a></li>
+                    <!-- In your nav-links, replace the Login button with this -->
+<!-- HTML (in all pages) -->
+<li id="auth-nav-item">
+    <a href="login.html" class="btn btn-primary" id="auth-button">Login</a>
+</li>
+
+<script>
+// JavaScript (in all pages)
+function updateNavigation() {
+    const authButton = document.getElementById('auth-button');
+    if (!authButton) return;
+    
+    if (checkUserLoggedIn()) {
+        authButton.textContent = 'Logout';
+        authButton.href = '#';
+        authButton.onclick = function(e) {
+            e.preventDefault();
+            setUserLoggedIn(false);
+            localStorage.removeItem('tarkaCart');
+            localStorage.removeItem('tarkaCurrentOrder');
+            window.location.href = 'welcome.html'; // Changed to welcome.html
+        };
+    } else {
+        authButton.textContent = 'Login';
+        authButton.href = 'login.html';
+        authButton.onclick = null;
+    }
+}
+
+document.addEventListener('DOMContentLoaded', updateNavigation);
+</script>
+
                 </ul>
             </div>
         </div>
     </nav>
 
     <!-- Menu Page Content -->
-    <div class="page-content active" style="background: linear-gradient(135deg, rgba(102, 126, 234, 0.1), rgba(118, 75, 162, 0.1)); min-height: 100vh; padding-top: 2rem;">
+    <div class="page-content active" id="menu-page" style="background: linear-gradient(135deg, rgba(102, 126, 234, 0.1), rgba(118, 75, 162, 0.1)); min-height: 100vh; padding-top: 2rem;">
         <div class="container">
             <!-- Page Title -->
              
 <div style="background: rgba(255, 255, 255, 0.85); backdrop-filter: blur(10px); padding: 3rem 4rem; border-radius: 25px; box-shadow: 0 20px 60px rgba(0,0,0,0.2); max-width: 1200px; width: 95%; margin: 2rem auto; ">
   
-            <h2 class="section-title" style="margin-top: 2rem; text-align: center;">Our Menu</h2>
+            <h2 class="section-title" style="margin-top: 2rem; color: var(--primary-orange);">Our Menu</h2>
            <!-- Menu Categories Container -->
             
             <div class="menu-container" id="menu-container">
                 <!-- Menu categories will be populated by JavaScript -->
             </div>
+            </div>
+        </div>
+    </div>
+    <!-- Item Detail Page -->
+    <div class="page-content" id="detail-page" style="background: linear-gradient(135deg, rgba(102, 126, 234, 0.1), rgba(118, 75, 162, 0.1)); min-height: 100vh; padding-top: 2rem; display: none;">
+        <div class="container">
+            <div style="background: rgba(255, 255, 255, 0.75); backdrop-filter: blur(9px); padding: 3rem 4rem; border-radius: 25px; box-shadow: 0 20px 60px rgba(0,0,0,0.15); max-width: 800px; width: 95%; margin: 2rem auto;">
+             
+                <!-- Back Button -->
+                <button onclick="goBackToMenu()" style="background: var(--primary-orange); color: white; border: none; padding: 0.5rem 1rem; border-radius: 20px; margin-bottom: 2rem; cursor: pointer; font-weight: 600;">← Back to Menu</button>
+                
+                <!-- Item Details Container -->
+                <div id="item-detail-content">
+                    <!-- Content will be populated by JavaScript -->
+                </div>
             </div>
         </div>
     </div>
@@ -66,7 +112,7 @@
                 </div>
                 <div class="footer-section">
                     <h3>Contact</h3>
-                    <p>📞 +1 (555) 123-4567</p>
+                    <p>📞 +92 345 1234567</p>
                     <p>📧 hello@tarka.com</p>
                     <p>📍 123 Food Street, City</p>
                 </div>
