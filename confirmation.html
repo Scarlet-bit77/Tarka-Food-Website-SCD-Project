@@ -1,11 +1,11 @@
-<!-- confirmation.html -->
+confirmation html
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Order Confirmed - TARKA</title>
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="confirmationstyle.css">
 </head>
 <body>
     <!-- Animated Background -->
@@ -21,53 +21,110 @@
         <div class="container">
             <div class="nav-content">
                 <a href="home.html" class="logo">
-                    <img src="logo (2).png" alt="Tarka Logo" class="logo-img"> TARKA</a>
+                    <img src="logo (2).png" alt="Tarka Logo" class="logo-img">
+                    TARKA
+                </a>
                 <ul class="nav-links">
                     <li><a href="home.html">Home</a></li>
                     <li><a href="menu.html">Menu</a></li>
                     <li><a href="cart.html">Cart (<span id="cart-count">0</span>)</a></li>
                     <li><a href="tracking.html">Track Order</a></li>
-                    <li><a href="login.html" class="btn btn-primary">Login</a></li>
+                    <!-- In your nav-links, replace the Login button with this -->
+<!-- HTML (in all pages) -->
+<li id="auth-nav-item">
+    <a href="login.html" class="btn btn-primary" id="auth-button">Login</a>
+</li>
+
+<script>
+// JavaScript (in all pages)
+function updateNavigation() {
+    const authButton = document.getElementById('auth-button');
+    if (!authButton) return;
+    
+    if (checkUserLoggedIn()) {
+        authButton.textContent = 'Logout';
+        authButton.href = '#';
+        authButton.onclick = function(e) {
+            e.preventDefault();
+            setUserLoggedIn(false);
+            localStorage.removeItem('tarkaCart');
+            localStorage.removeItem('tarkaCurrentOrder');
+            window.location.href = 'welcome.html'; // Changed to welcome.html
+        };
+    } else {
+        authButton.textContent = 'Login';
+        authButton.href = 'login.html';
+        authButton.onclick = null;
+    }
+}
+
+document.addEventListener('DOMContentLoaded', updateNavigation);
+</script>
+
                 </ul>
             </div>
         </div>
     </nav>
 
-
-
-
-
-
-
     <!-- Order Confirmation Page Content -->
-<div class="page-content active" style="min-height: 100vh; display: flex; align-items: center; justify-content: center;">
-    <!-- Transparent White Box Wrapper -->
-    <div style="background: rgba(240, 226, 226, 0.75); backdrop-filter: blur(10px); padding: 2rem; border-radius: 25px; box-shadow: 0 20px 60px rgba(0,0,0,0.2); max-width: 900px; width: 95%; text-align: center;">
-        
-        <!-- Success Animation -->
-        <div style="font-size: 5rem; margin-bottom: 2rem; animation: bounce 2s infinite;">✅</div>
-        
-        <!-- Confirmation Message -->
-        <h2 style="color: var(--primary-orange); margin-bottom: 1rem; font-size: 2.5rem;">Order Confirmed!</h2>
-        <p style="color: var(--text-dark); margin-bottom: 2rem; font-size: 1.2rem;">Thank you for your order. Your delicious food is being prepared.</p>
-        
-        <!-- Order Details Card -->
-        <div style="background: rgba(255, 243, 205, 0.9); backdrop-filter: blur(10px); padding: 2.5rem; border-radius: 20px; margin: 2rem auto; max-width: 400px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); text-align: left;">
-            <h3 style="margin-bottom: 1rem;">Order Details</h3>
-            <p style="margin-bottom: 0.5rem;"><strong>Order ID:</strong> <span id="order-id">#12345</span></p>
-            <p><strong>Estimated Delivery:</strong> <span id="delivery-time">30-45 minutes</span></p>
+    <div class="confirmation-container">
+        <!-- Success Card -->
+        <div class="confirmation-card">
+            <!-- Animated Checkmark -->
+            <div class="success-animation">
+                <svg class="checkmark" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52">
+                    <circle class="checkmark__circle" cx="26" cy="26" r="25" fill="none"/>
+                    <path class="checkmark__check" fill="none" d="M14.1 27.2l7.1 7.2 16.7-16.8"/>
+                </svg>
+            </div>
+
+            <!-- Confirmation Message -->
+            <div class="confirmation-header">
+                <h2>Order Confirmed!</h2>
+                <p class="confirmation-subtitle">Thank you for your order. Your delicious food is being prepared.</p>
+            </div>
+
+            <!-- Order Details Card -->
+            <div class="order-details-card">
+                <h3>Order Details</h3>
+                <div class="order-info">
+                    <div class="info-item">
+                        <span class="info-label">Order ID:</span>
+                        <span class="info-value" id="order-id">#TKA0001</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">Estimated Delivery:</span>
+                        <span class="info-value" id="delivery-time">30-40 minutes</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">Total Amount:</span>
+                        <span class="info-value" id="order-total">Rs0.00</span>
+                    </div>
+                </div>
+                <!-- Add this line in your order summary where you show subtotal, delivery, tax, etc. -->
+<div id="confirmation-discount" style="display: none;"></div>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="action-buttons">
+                <a href="tracking.html" class="btn btn-primary btn-large">
+                    <span class="btn-icon">📍</span>
+                    Track Order
+                </a>
+                <a href="home.html" class="btn btn-secondary btn-large">
+                    <span class="btn-icon">🛒</span>
+                    Continue Shopping
+                </a>
+            </div>
+
+            <!-- Quick Support -->
+            <div class="support-section">
+                <p>Need help? Contact Support</p>
+            </div>
         </div>
-        
-        <!-- Action Buttons -->
-        <a href="tracking.html" class="btn btn-primary" style="margin-right: 1rem; text-decoration: none;">Track Order</a>
-        <a href="home.html" class="btn btn-secondary" style="text-decoration: none;">Continue Shopping</a>
-        
     </div>
-</div>
 
-
-
-      <!-- Footer Section -->
+    <!-- Footer Section -->
     <footer class="footer">
         <div class="container">
             <div class="footer-content">
@@ -77,13 +134,13 @@
                 </div>
                 <div class="footer-section">
                     <h3>Quick Links</h3>
-                    <p><a href="menu.html" style="color: var(--text-light); text-decoration: none;">Menu</a></p>
-                    <p><a href="tracking.html" style="color: var(--text-light); text-decoration: none;">Track Order</a></p>
-                    <p><a href="home.html" style="color: var(--text-light); text-decoration: none;">About Us</a></p>
+                    <p><a href="menu.html" class="footer-link">Menu</a></p>
+                    <p><a href="tracking.html" class="footer-link">Track Order</a></p>
+                    <p><a href="home.html" class="footer-link">About Us</a></p>
                 </div>
                 <div class="footer-section">
                     <h3>Contact</h3>
-                    <p>📞 +1 (555) 123-4567</p>
+                    <p>📞 +92 345 1234567</p>
                     <p>📧 hello@tarka.com</p>
                     <p>📍 123 Food Street, City</p>
                 </div>
@@ -94,7 +151,6 @@
         </div>
     </footer>
 
-    
     <!-- JavaScript -->
     <script src="script.js"></script>
 </body>
