@@ -5,7 +5,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>TARKA - Food Delivery</title>
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="home.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
 </head>
 <body>
     <!-- Animated Background -->
@@ -27,7 +29,37 @@
                     <li><a href="menu.html">Menu</a></li>
                     <li><a href="cart.html">Cart (<span id="cart-count">0</span>)</a></li>
                     <li><a href="tracking.html">Track Order</a></li>
-                    <li><a href="login.html" class="btn btn-primary">Login</a></li>
+                     <!-- In your nav-links, replace the Login button with this -->
+             <!-- HTML (in all pages) -->
+                    <li id="auth-nav-item">
+                      <a href="login.html" class="btn btn-primary" id="auth-button">Login</a></li>
+
+<script>
+// JavaScript (in all pages)
+function updateNavigation() {
+    const authButton = document.getElementById('auth-button');
+    if (!authButton) return;
+    
+    if (checkUserLoggedIn()) {
+        authButton.textContent = 'Logout';
+        authButton.href = '#';
+        authButton.onclick = function(e) {
+            e.preventDefault();
+            setUserLoggedIn(false);
+            localStorage.removeItem('tarkaCart');
+            localStorage.removeItem('tarkaCurrentOrder');
+            window.location.href = 'welcome.html'; // Changed to welcome.html
+        };
+    } else {
+        authButton.textContent = 'Login';
+        authButton.href = 'login.html';
+        authButton.onclick = null;
+    }
+}
+
+document.addEventListener('DOMContentLoaded', updateNavigation);
+</script>
+
                 </ul>
             </div>
         </div>
@@ -39,106 +71,295 @@
             <h1>Delicious Food Delivered</h1>
             <p>Experience the finest cuisine delivered fresh to your doorstep</p>
             <div class="hero-buttons">
-                <a href="menu.html" class="btn btn-primary1">Order Now</a>
-                <a href="menu.html" class="btn btn-secondary">View Menu</a>
+                <a href="menu.html" class="btn btn-secondary">Order Now</a>
             </div>
         </div>
     </section>
 
-   <!-- Categories Section -->
-<section class="categories">
-    <div class="container">
-        <h2 class="section-title">Categories</h2>
-        <div class="category-grid">
+    <!-- Categories Section -->
+    <section class="categories">
+        <div class="container">
+            <h2 class="section-title" style=" color: var(--primary-orange);"> Categories</h2>
+            <div class="category-grid">
 
-            <!-- Pizza Category -->
-            <div class="category-card" onclick="window.location.href='menu.html?category=pizza'">
-                <img src="pizza.jpeg" alt="Pizza" class="category-img">
-                <h3>Pizza</h3>
+                <!-- Pizza Category -->
+                <div class="category-card" data-rating="4.5" onclick="window.location.href='menu.html?category=pizza'">
+                    <img src="pizza.jpeg" alt="Pizza" class="category-img">
+                      <div class="category-header">
+                    <h3>Pizza</h3>
+                    <div class="category-rating">
+                    <div class="rating" ></div>
+                        <span class="rating-text">4.5</span>
+                    </div>
+                </div>
                 <p>Fresh, hot pizzas with cheesy toppings</p>
-            </div>
-
-            <!-- Burger Category -->
-            <div class="category-card" onclick="window.location.href='menu.html?category=burger'">
-                <img src="burger.jpeg" alt="Burger" class="category-img">
-                <h3>Burgers</h3>
+                <div class="category-footer">
+                    <div class="category-delivery">
+                        <span class="clock-icon">🕐</span>
+                        <span class="delivery-time">25-30 min</span>
+                    </div>
+                     <div class="category-calories">
+                        <span class="calorie-icon">🔥</span>
+                        <span class="calories">450-650 cal</span>
+                    </div>
+                </div>
+                </div>
+                <!-- Burger Category -->
+                <div class="category-card" data-rating="4.3" onclick="window.location.href='menu.html?category=burger'">
+                   <img src="burger.jpeg" alt="Burger" class="category-img">
+                   <div class="category-header">
+                    <h3>Burgers</h3>
+                    <div class="category-rating">
+                        <div class="rating" ></div>
+                        <span class="rating-text">4.3</span>
+                    </div>
+                </div>
                 <p>Juicy burgers made with finest ingredients</p>
-            </div>
-
-            <!-- Nehari Category -->
-            <div class="category-card" onclick="window.location.href='menu.html?category=nehari'">
-                <img src="nehari.jpeg" alt="Nehari" class="category-img">
+                <div class="category-footer">
+                    <div class="category-delivery">
+                        <span class="clock-icon">🕐</span>
+                        <span class="delivery-time">15-20 min</span>
+                    </div>
+                    <div class="category-calories">
+                        <span class="calorie-icon">🔥</span>
+                        <span class="calories">550-750 cal</span>
+                    </div>
+                </div>
+                </div>
+                  <!-- Nehari Category -->
+            <div class="category-card" data-rating="4.7"onclick="window.location.href='menu.html?category=nehari'">
+                 <img src="nehari.jpeg" alt="Nehari" class="category-img">
+                 <div class="category-header">
                 <h3>Nehari</h3>
-                <p>Slow-cooked beef stew with rich gravy</p>
+                <div class="category-rating">
+                    <div class="rating" ></div>
+                    <span class="rating-text">4.7</span>
+                </div>
+            </div>
+            <p>Slow-cooked beef stew with rich gravy</p>
+            <div class="category-footer">
+                <div class="category-delivery">
+                    <span class="clock-icon">🕐</span>
+                    <span class="delivery-time">40-50 min</span>
+                </div>
+                 <div class="category-calories">
+                    <span class="calorie-icon">🔥</span>
+                    <span class="calories">400-600 cal</span>
+                </div>
+            </div>
             </div>
 
-            <!-- Karahi Category -->
-            <div class="category-card" onclick="window.location.href='menu.html?category=karahi'">
+                <!-- Karahi Category -->
+            <div class="category-card" data-rating="4.6"onclick="window.location.href='menu.html?category=karahi'">
                 <img src="karahi.png" alt="Karahi" class="category-img">
+                 <div class="category-header">
                 <h3>Karahi</h3>
-                <p>Sizzling wok-cooked chicken and mutton</p>
+                <div class="category-rating">
+                   <div class="rating" ></div>
+                    <span class="rating-text">4.6</span>
+                </div>
+            </div>
+            <p>Sizzling wok-cooked chicken and mutton</p>
+            <div class="category-footer">
+                <div class="category-delivery">
+                    <span class="clock-icon">🕐</span>
+                    <span class="delivery-time">30-40 min</span>
+                </div>
+                <div class="category-calories">
+                    <span class="calorie-icon">🔥</span>
+                    <span class="calories">500-700 cal</span>
+                </div>
+            </div>
+            </div>
+          
+           <!-- \Biryani & Rice Category-->
+            <div class="category-card" data-rating="4.8"onclick="window.location.href='menu.html?category=biryani'">
+                 <img src="biryani.png" alt="Biryani" class="category-img">
+                  <div class="category-header">
+                <h3>Biryani & Rice</h3>
+                <div class="category-rating">
+                <div class="rating" ></div>
+                    <span class="rating-text">4.8</span>
+                </div>
+            </div>
+            <p>Aromatic rice with tender meat and spices</p>
+            <div class="category-footer">
+                <div class="category-delivery">
+                    <span class="clock-icon">🕐</span>
+                    <span class="delivery-time">35-45 min</span>
+                </div>
+                <div class="category-calories">
+                    <span class="calorie-icon">🔥</span>
+                    <span class="calories">600-800 cal</span>
+                </div>
+            </div>     
             </div>
 
-            <!-- Biryani & Rice -->
-            <div class="category-card" onclick="window.location.href='menu.html?category=biryani'">
-                <img src="biryani.png" alt="Biryani" class="category-img">
-                <h3>Biryani & Rice</h3>
-                <p>Aromatic rice with tender meat and spices</p>
-            </div>
 
             <!-- Curry & Gravies -->
-            <div class="category-card" onclick="window.location.href='menu.html?category=curry'">
-                <img src="curry.jpeg" alt="Curry" class="category-img">
+            <div class="category-card" data-rating="4.4"onclick="window.location.href='menu.html?category=curry'">
+                 <img src="curry.jpeg" alt="Curry" class="category-img">
+                  <div class="category-header">
                 <h3>Curry & Gravies</h3>
-                <p>Rich gravies, masala curries and sauces</p>
+                <div class="category-rating">
+                  <div class="rating" ></div>
+                    <span class="rating-text">4.4</span>
+                </div>
+            </div>
+            <p>Rich gravies, masala curries and sauces</p>
+            <div class="category-footer">
+                <div class="category-delivery">
+                    <span class="clock-icon">🕐</span>
+                    <span class="delivery-time">25-35 min</span>
+                </div>
+                <div class="category-calories">
+                    <span class="calorie-icon">🔥</span>
+                    <span class="calories">350-550 cal</span>
+                </div>
+            </div>     
             </div>
 
             <!-- Veg & Paneer Dishes -->
-            <div class="category-card" onclick="window.location.href='menu.html?category=veg-paneer'">
-                <img src="peneer.jpeg" alt="Veg and Paneer" class="category-img">
+            <div class="category-card" data-rating="4.2"onclick="window.location.href='menu.html?category=veg-paneer'">
+                  <img src="peneer.jpeg" alt="Veg and Paneer" class="category-img">
+                     <div class="category-header">
                 <h3>Veg & Paneer</h3>
-                <p>Fresh, flavorful vegetarian dishes with a desi touch</p>
+                <div class="category-rating">
+                    <div class="rating" ></div>
+                    <span class="rating-text">4.2</span>
+                </div>
+            </div>
+            <p>Fresh, flavorful vegetarian dishes with a desi touch.</p>
+            <div class="category-footer">
+               
+                <div class="category-delivery">
+                    <span class="clock-icon">🕐</span>
+                    <span class="delivery-time">20-30 min</span>
+                </div>
+                 <div class="category-calories">
+                    <span class="calorie-icon">🔥</span>
+                    <span class="calories">250-450 cal</span>
+                </div>
+            </div>         
             </div>
 
-            <!-- Naan & Bread -->
-            <div class="category-card" onclick="window.location.href='menu.html?category=naan'">
+            <!-- Naan & Bread Category -->
+            <div class="category-card" data-rating="4.1"onclick="window.location.href='menu.html?category=naan'">
                 <img src="naan.png" alt="Naan" class="category-img">
+                <div class="category-header">
                 <h3>Naan & Bread</h3>
-                <p>Fresh baked naan, roti and tandoori bread</p>
+                <div class="category-rating">
+                  <div class="rating" ></div>
+                    <span class="rating-text">4.1</span>
+                </div>
             </div>
+            <p>Fresh baked naan, roti and tandoori bread</p>
+            <div class="category-footer">       
+                <div class="category-delivery">
+                    <span class="clock-icon">🕐</span>
+                    <span class="delivery-time">10-15 min</span>
 
-            <!-- Lassi & Drinks -->
-            <div class="category-card" onclick="window.location.href='menu.html?category=drinks'">
+                </div>
+                <div class="category-calories">
+                    <span class="calorie-icon">🔥</span>
+                    <span class="calories">200-350 cal</span>
+                </div>
+            </div>
+            </div>
+              <!-- Lassi & Drinks Category -->
+            <div class="category-card" data-rating="4.0"onclick="window.location.href='menu.html?category=drinks'">
                 <img src="lassi.png" alt="Lassi" class="category-img">
+                 <div class="category-header">
                 <h3>Lassi & Drinks</h3>
-                <p>Refreshing yogurt drinks and beverages</p>
+                <div class="category-rating">
+                   <div class="rating" ></div>
+                    <span class="rating-text">4.0</span>
+                </div>
             </div>
-
-            <!-- BBQ & Grills -->
-            <div class="category-card" onclick="window.location.href='menu.html?category=bbq'">
-                <img src="Tikka.jpeg" alt="BBQ" class="category-img">
+            <p>Refreshing yogurt drinks and beverages</p>
+            <div class="category-footer">
+                
+                <div class="category-delivery">
+                    <span class="clock-icon">🕐</span>
+                    <span class="delivery-time">5-10 min</span>
+                </div>
+                <div class="category-calories">
+                    <span class="calorie-icon">🔥</span>
+                    <span class="calories">150-300 cal</span>
+                </div>
+            </div>
+            </div>
+            <!-- BBQ & Grills Category -->
+            <div class="category-card" data-rating="4.9"onclick="window.location.href='menu.html?category=bbq'">
+                  <img src="Tikka.jpeg" alt="BBQ" class="category-img">
+                  <div class="category-header">
                 <h3>BBQ & Grills</h3>
-                <p>Tandoori chicken, seekh kebabs and tikkas</p>
+                <div class="category-rating">
+                    <div class="rating" ></div>
+                    <span class="rating-text">4.9</span>
+                </div>
+            </div>
+            <p>Tandoori chicken, seekh kebabs and tikkas</p>
+            <div class="category-footer">
+                <div class="category-delivery">
+                    <span class="clock-icon">🕐</span>
+                    <span class="delivery-time">30-40 min</span>
+                </div>
+                <div class="category-calories">
+                    <span class="calorie-icon">🔥</span>
+                    <span class="calories">400-650 cal</span>
+                </div>
+            </div>
             </div>
 
-            <!-- Desserts -->
-            <div class="category-card" onclick="window.location.href='menu.html?category=dessert'">
-                <img src="gulab jamun.jpeg" alt="Dessert" class="category-img">
+                <!-- Desserts Category -->
+                <div class="category-card"data-rating="4.7" onclick="window.location.href='menu.html?category=dessert'">
+                    <img src="gulab jamun.jpeg" alt="Dessert" class="category-img">
+                    <div class="category-header">
                 <h3>Desserts & Sweets</h3>
-                <p>Sweet treats to end your meal perfectly</p>
+                <div class="category-rating">
+                  <div class="rating" ></div>
+                    <span class="rating-text">4.7</span>
+                </div>
             </div>
-
-            <!-- Desi Specials -->
-            <div class="category-card" onclick="window.location.href='menu.html?category=desi-specials'">
-                <img src="desi special.jpeg" alt="Desi Specials" class="category-img">
-                <h3>Desi Specials</h3>
-                <p>Haleem, Paye and traditional dishes</p>
+            <p>Sweet treats to end your meal perfectly</p>
+            <div class="category-footer">
+                <div class="category-delivery">
+                    <span class="clock-icon">🕐</span>
+                    <span class="delivery-time">10-15 min</span>
+                </div>
+                <div class="category-calories">
+                    <span class="calorie-icon">🔥</span>
+                    <span class="calories">200-400 cal</span>
+                </div>
+                </div>
+                </div>
+                   <!-- Desi Specials -->
+            <div class="category-card" data-rating="4.8"onclick="window.location.href='menu.html?category=desi-specials'">
+               <img src="desi special.jpeg" alt="Desi Specials" class="category-img">
+                  <div class="category-header">
+               <h3>Desi Specials</h3>
+                <div class="category-rating">
+                  <div class="rating" ></div>
+                    <span class="rating-text">4.8</span>
+                </div>
             </div>
-
+            <p>Haleem, Paye  and traditional dishes</p>
+            <div class="category-footer">
+                <div class="category-delivery">
+                    <span class="clock-icon">🕐</span>
+                    <span class="delivery-time">45-60 min</span>
+                </div>
+                <div class="category-calories">
+                    <span class="calorie-icon">🔥</span>
+                    <span class="calories">450-700 cal</span>
+                </div>
+               
+            </div>
+            </div>
         </div>
-    </div>
-</section>
-
+    </section>
+ 
              
 
     <!-- Footer Section -->
@@ -157,7 +378,7 @@
                 </div>
                 <div class="footer-section">
                     <h3>Contact</h3>
-                    <p>📞 +1 (555) 123-4567</p>
+                    <p>📞 +92 345 1234567</p>
                     <p>📧 hello@tarka.com</p>
                     <p>📍 123 Food Street, City</p>
                 </div>
