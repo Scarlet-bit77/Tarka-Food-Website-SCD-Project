@@ -1,77 +1,332 @@
-<!-- checkout.html -->
+
+checkout html 
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Checkout - TARKA</title>
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="checkoutstyle.css">
 </head>
 <body>
-   
+
+ <!-- Animated Background -->
+    <div class="bg-animation">
+        <div class="floating-shape"></div>
+        <div class="floating-shape"></div>
+        <div class="floating-shape"></div>
+        <div class="floating-shape"></div>
+    </div>
+
 
     <!-- Navigation Section -->
     <nav class="navbar">
         <div class="container">
             <div class="nav-content">
                 <a href="home.html" class="logo">
-                       <img src="logo (2).png" alt="Tarka Logo" class="logo-img"> TARKA</a>
+                    <img src="logo (2).png" alt="Tarka Logo" class="logo-img"> TARKA
+                </a>
                 <ul class="nav-links">
                     <li><a href="home.html">Home</a></li>
                     <li><a href="menu.html">Menu</a></li>
                     <li><a href="cart.html">Cart (<span id="cart-count">0</span>)</a></li>
                     <li><a href="tracking.html">Track Order</a></li>
-                    <li><a href="login.html" class="btn btn-primary">Login</a></li>
+                     <!-- In your nav-links, replace the Login button with this -->
+<!-- HTML (in all pages) -->
+<li id="auth-nav-item">
+    <a href="login.html" class="btn btn-primary" id="auth-button">Login</a>
+</li>
+
+<script>
+// JavaScript (in all pages)
+function updateNavigation() {
+    const authButton = document.getElementById('auth-button');
+    if (!authButton) return;
+    
+    if (checkUserLoggedIn()) {
+        authButton.textContent = 'Logout';
+        authButton.href = '#';
+        authButton.onclick = function(e) {
+            e.preventDefault();
+            setUserLoggedIn(false);
+            localStorage.removeItem('tarkaCart');
+            localStorage.removeItem('tarkaCurrentOrder');
+            window.location.href = 'welcome.html'; // Changed to welcome.html
+        };
+    } else {
+        authButton.textContent = 'Login';
+        authButton.href = 'login.html';
+        authButton.onclick = null;
+    }
+}
+
+document.addEventListener('DOMContentLoaded', updateNavigation);
+</script>
+
                 </ul>
             </div>
         </div>
     </nav>
 
     <!-- Checkout Page Content -->
-    <div class="page-content active" style="background: linear-gradient(135deg, rgba(102, 126, 234, 0.1), rgba(118, 75, 162, 0.1)); min-height: 100vh; padding-top: 2rem;">
+    <div class="page-content active checkout-page">
         <div class="container">
-            
-            <!-- Page Title -->
-             
+            <div class="checkout-container">
+                <!-- Page Header -->
+                <div class="checkout-header">
+                    <h2 class="section-title">Checkout</h2>
 
-<div style="background: rgba(255, 255, 255, 0.85); backdrop-filter: blur(10px); padding: 3rem 4rem; border-radius: 25px; box-shadow: 0 20px 60px rgba(0,0,0,0.2); max-width: 800px; width: 95%; margin: 2rem auto; text-align: center;">
-    <h2 class="section-title" style="margin-top: 0; color: var(--primary-orange);">Checkout</h2>
+                    <div class="checkout-progress">
+                        <div class="progress-step active">
+                            <div class="step-number">1</div>
+                            <span class="step-text">Cart</span>
+                        </div>
+                        <div class="progress-step active">
+                            <div class="step-number">2</div>
+                            <span class="step-text">Details</span>
+                        </div>
+                        <div class="progress-step">
+                            <div class="step-number">3</div>
+                            <span class="step-text">Payment</span>
+                        </div>
+                        <div class="progress-step">
+                            <div class="step-number">4</div>
+                            <span class="step-text">Confirmation</span>
+                        </div>
+                    </div>
+                </div>
 
-                <!-- Checkout Form -->
-                <form class="login-form" onsubmit="handleCheckout(event)" style="max-width: none;">
-                    <h3 style="color: var(--primary-orange); margin-bottom: 1.5rem;">Delivery Information</h3>
-                    <!-- Full Name Input -->
+                <div class="checkout-content">
+                    <!-- Checkout Form -->
+                    <div class="checkout-form-section">
+                        <form class="checkout-form" onsubmit="handleCheckout(event)">
+                            <!-- Order Review -->
+                            <div class="form-section">
+                                <h3 class="form-section-title">
+                                    <span class="form-icon">🛒</span>
+                                    Order Review
+                                </h3>
+                                <div class="order-review">
+                                    <div class="cart-items-preview" id="cart-items-preview">
+                                        <!-- Dynamic cart items from script.js -->
+                                    </div>
+                                    <div class="item-count">Total items: <span id="item-count">0</span></div>
+                                </div>
+                            </div>
+
+                            <!-- Delivery Information -->
+                            <div class="form-section">
+                                <h3 class="form-section-title">
+                                    <span class="form-icon">📍</span>
+                                    Delivery Information
+                                </h3>
+                                
+                             <!-- Update your form inputs like this: -->
+                                    <div class="form-row">
+                                      <div class="form-group">
+                            <label for="fullName">Full Name</label>
+                          <input type="text" id="fullName" placeholder="Enter your full name" 
+                              required minlength="2" maxlength="50">
+                               </div>
                     <div class="form-group">
-                        <label for="fullName">Full Name</label>
-                        <input type="text" id="fullName" placeholder="Enter your full name" required>
+                      <label for="phone">Phone Number</label>
+                          <input type="tel" id="phone" placeholder="Enter your phone number" 
+                           required pattern="[0-9]{11}" title="Please enter exactly 11 digits">
+                            </div>
+                                   </div>
+
+                             <div class="form-group">
+                                <label for="address">Delivery Address</label>
+                            <input type="text" id="address" placeholder="Start typing your address..." 
+                                  required minlength="5">
+                                          </div>
+                                <!-- Delivery Time -->
+                                <div class="form-group">
+                                    <label for="delivery-time">Preferred Delivery Time</label>
+                                    <div class="delivery-time-options">
+                                        <div class="time-option">
+                                            <input type="radio" id="asap" name="deliveryTime" value="asap" checked>
+                                            <label for="asap">
+                                                <span class="time-type">ASAP</span>
+                                                <span class="time-estimate">~25-35 min</span>
+                                            </label>
+                                        </div>
+                                        <div class="time-option">
+                                            <input type="radio" id="standard" name="deliveryTime" value="schedule">
+                                            <label for="schedule">
+                                                <span class="time-type">Schedule</span>
+                                                <span class="time-estimate">~35-45 min</span>
+                                            </label>
+                                        </div>
+                                    </div>
+                                    <div class="schedule-time" id="schedule-time" style="display: none;">
+                                        <input type="datetime-local" id="delivery-date-time">
+                                    </div>
+                                </div>
+                                
+                                <!-- Delivery Instructions -->
+                                <div class="form-group">
+                                    <label for="delivery-instructions">Delivery Instructions</label>
+                                    <div class="instruction-options">
+                                        <button type="button" class="instruction-option" data-instruction="Leave at door">
+                                            🚪 Leave at door
+                                        </button>
+                                        <button type="button" class="instruction-option" data-instruction="Call on arrival">
+                                            📞 Call on arrival
+                                        </button>
+                                        <button type="button" class="instruction-option" data-instruction="Office delivery">
+                                            🏢 Office delivery
+                                        </button>
+                                    </div>
+                                    <textarea id="delivery-instructions" placeholder="Any special instructions..."></textarea>
+                                </div>
+                            </div>
+
+                         
+                            <!-- Payment Method -->
+                            <div class="form-section">
+                                <h3 class="form-section-title">
+                                    <span class="form-icon">💳</span>
+                                    Payment Method
+                                </h3>
+                                
+                                <div class="payment-options">
+                                    <div class="payment-option">
+                                        <input type="radio" id="card" name="payment" value="card" required>
+                                        <label for="card">
+                                            <span class="payment-icon">💳</span>
+                                            <span class="payment-text">
+                                                <strong>Credit/Debit Card</strong>
+                                                <small>Pay securely with your card</small>
+                                            </span>
+                                        </label>
+                                    </div>
+                                    
+                                    <div class="payment-option">
+                                        <input type="radio" id="cash" name="payment" value="cash">
+                                        <label for="cash">
+                                            <span class="payment-icon">💰</span>
+                                            <span class="payment-text">
+                                                <strong>Cash on Delivery</strong>
+                                                <small>Pay when you receive your order</small>
+                                            </span>
+                                        </label>
+                                    </div>
+                                </div>
+                                
+                                <!-- Card Details -->
+                                <div class="card-details" id="card-details">
+                                    <div class="form-row">
+                                        <div class="form-group">
+                                            <label for="cardNumber">Card Number</label>
+                                            <input type="text" id="cardNumber" placeholder="1234 5678 9012 3456">
+                                        </div>
+                                    </div>
+                                    <div class="form-row">
+                                        <div class="form-group">
+                                            <label for="expiryDate">Expiry Date</label>
+                                            <input type="text" id="expiryDate" placeholder="MM/YY">
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="cvv">CVV</label>
+                                            <input type="text" id="cvv" placeholder="123">
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Payment Security -->
+                                <div class="payment-security">
+                                    <div class="payment-methods">
+                                        <span>We Accept:</span>
+                                        <div class="payment-icons">
+                                            <span class="payment-method-icon">💳</span>
+                                            <span class="payment-method-icon">📱</span>
+                                            <span class="payment-method-icon">🏦</span>
+                                        </div>
+                                    </div>
+                                    <div class="encryption-notice">
+                                        <small>🔒 Your payment information is encrypted and secure</small>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Save Information -->
+                            <div class="save-info-section">
+                                <div class="checkbox-group">
+                                    <input type="checkbox" id="save-address">
+                                    <label for="save-address">Save this address for future orders</label>
+                                </div>
+                                <div class="checkbox-group">
+                                    <input type="checkbox" id="newsletter" checked>
+                                    <label for="newsletter">Receive special offers and updates</label>
+                                </div>
+                            </div>
+
+                            <!-- Security Badges -->
+                            <div class="security-section">
+                                <div class="security-badges">
+                                    <div class="badge">
+                                        <span class="badge-icon">🔒</span>
+                                        <span>Secure Payment</span>
+                                    </div>
+                                    <div class="badge">
+                                        <span class="badge-icon">🚚</span>
+                                        <span>Free Delivery After every 2 orders!</span>
+                                    </div>
+                                    <div class="badge">
+                                        <span class="badge-icon">⭐</span>
+                                        <span>4.8/5 Rating</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Order Summary -->
+                            <div class="order-summary-section">
+                                <div class="summary-header">
+                                    <h3 class="form-section-title">
+                                        <span class="form-icon">📋</span>
+                                        Order Summary
+                                    </h3>
+                                    <button type="button" class="toggle-details" id="toggle-details">
+                                        <span>Show Details</span>
+                                        <span class="toggle-icon">▼</span>
+                                    </button>
+                                </div>
+                                
+                                <div class="order-details-collapsible" id="order-details" style="display: none;">
+                                    <div class="order-items" id="order-items">
+                                        <!-- Dynamic order items from script.js -->
+                                    </div>
+                                </div>
+                                
+                                <div class="order-totals">
+                                    <div class="total-row">
+                                        <span>Subtotal</span>
+                                        <span id="subtotal">Rs0.00</span>
+                                    </div>
+                                    <div class="total-row">
+                                        <span>Delivery Fee</span>
+                                        <span id="delivery-fee">Rs0.00</span>
+                                    </div>
+                                    <div class="total-row">
+                                        <span>Tax</span>
+                                        <span id="tax">Rs0.00</span>
+                                    </div>
+                                   
+                                    <div class="total-row grand-total">
+                                        <span>Total</span>
+                                        <span>Rs<span id="checkout-total">0.00</span></span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Place Order Button -->
+                            <button type="submit" class="btn btn-primary btn-large checkout-btn">
+                                Place Order
+                            </button>
+                        </form>
                     </div>
-                    <!-- Phone Number Input -->
-                    <div class="form-group">
-                        <label for="phone">Phone Number</label>
-                        <input type="tel" id="phone" placeholder="Enter your phone number" required>
-                    </div>
-                    <!-- Address Input -->
-                    <div class="form-group">
-                        <label for="address">Delivery Address</label>
-                        <input type="text" id="address" placeholder="Enter your delivery address" required>
-                    </div>
-                    <!-- Payment Method Selection -->
-                    <div class="form-group">
-                        <label for="payment">Payment Method</label>
-                        <select id="payment" style="width: 100%; padding: 15px 20px; border: 2px solid rgba(233, 236, 239, 0.8); border-radius: 15px; background: rgba(255, 255, 255, 0.9); transition: all 0.3s ease;" required>
-                            <option value="">Select Payment Method</option>
-                            <option value="card">Credit/Debit Card</option>
-                            <option value="cash">Cash on Delivery</option>
-                            <option value="upi">UPI Payment</option>
-                        </select>
-                    </div>
-                    <!-- Order Total Display -->
-                    <div class="cart-total">
-                        <h3>Order Total: $<span id="checkout-total">0.00</span></h3>
-                    </div>
-                    <!-- Place Order Button -->
-                    <button type="submit" class="btn btn-primary" style="width: 100%;">Place Order</button>
-                </form>
+                </div>
             </div>
         </div>
     </div>
@@ -86,13 +341,13 @@
                 </div>
                 <div class="footer-section">
                     <h3>Quick Links</h3>
-                    <p><a href="menu.html" style="color: var(--text-light); text-decoration: none;">Menu</a></p>
-                    <p><a href="tracking.html" style="color: var(--text-light); text-decoration: none;">Track Order</a></p>
-                    <p><a href="home.html" style="color: var(--text-light); text-decoration: none;">About Us</a></p>
+                    <p><a href="menu.html" class="footer-link">Menu</a></p>
+                    <p><a href="tracking.html" class="footer-link">Track Order</a></p>
+                    <p><a href="home.html" class="footer-link">About Us</a></p>
                 </div>
                 <div class="footer-section">
                     <h3>Contact</h3>
-                    <p>📞 +1 (555) 123-4567</p>
+                    <p>📞 +92 345 1234567</p>
                     <p>📧 hello@tarka.com</p>
                     <p>📍 123 Food Street, City</p>
                 </div>
