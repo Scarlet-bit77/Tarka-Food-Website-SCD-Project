@@ -6,7 +6,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Cart - TARKA</title>
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="cart.css">
 </head>
 <body>
     <!-- Animated Background -->
@@ -28,25 +28,108 @@
                     <li><a href="menu.html">Menu</a></li>
                     <li><a href="cart.html">Cart (<span id="cart-count">0</span>)</a></li>
                     <li><a href="tracking.html">Track Order</a></li>
-                    <li><a href="login.html" class="btn btn-primary">Login</a></li>
+                     <!-- In your nav-links, replace the Login button with this -->
+<!-- HTML (in all pages) -->
+<li id="auth-nav-item">
+    <a href="login.html" class="btn btn-primary" id="auth-button">Login</a>
+</li>
+
+<script>
+// JavaScript (in all pages)
+function updateNavigation() {
+    const authButton = document.getElementById('auth-button');
+    if (!authButton) return;
+    
+    if (checkUserLoggedIn()) {
+        authButton.textContent = 'Logout';
+        authButton.href = '#';
+        authButton.onclick = function(e) {
+            e.preventDefault();
+            setUserLoggedIn(false);
+            localStorage.removeItem('tarkaCart');
+            localStorage.removeItem('tarkaCurrentOrder');
+            window.location.href = 'welcome.html'; // Changed to welcome.html
+        };
+    } else {
+        authButton.textContent = 'Login';
+        authButton.href = 'login.html';
+        authButton.onclick = null;
+    }
+}
+
+document.addEventListener('DOMContentLoaded', updateNavigation);
+</script>
+
                 </ul>
             </div>
         </div>
     </nav>
 
+ 
     <!-- Cart Page Content -->
-    <div class="page-content active" style="background: linear-gradient(135deg, rgba(255, 215, 0, 0.1), rgba(245, 91, 35, 0.1)); min-height: 100vh; padding-top: 2rem;">
+    <div class="page-content active" style="background: linear-gradient(135deg, rgba(102, 126, 234, 0.1), rgba(118, 75, 162, 0.1)); min-height: 100vh; padding-top: 2rem;">
         <div class="container cart-container">
             <!-- Page Title -->
-            <h2 class="section-title">Your Cart</h2>
-            <!-- Cart Items Container -->
-            <div id="cart-items">
-                <p style="text-align: center; color: var(--text-light); margin: 3rem 0;">Your cart is empty</p>
-            </div>
-            <!-- Cart Total Section -->
-            <div class="cart-total" id="cart-total" style="display: none;">
-                <h3>Total: $<span id="total-amount">0.00</span></h3>
-                <a href="checkout.html" class="btn btn-primary" style="margin-top: 1rem; text-decoration: none;">Proceed to Checkout</a>
+            <div style="background: rgba(255, 255, 255, 0.85); backdrop-filter: blur(10px); padding: 3rem 4rem; border-radius: 25px; box-shadow: 0 20px 60px rgba(0,0,0,0.2); max-width: 1200px; width: 95%; margin: 2rem auto;">
+                <h2 class="section-title" style="color: var(--primary-orange); text-align: center; margin-bottom: 2rem;">Your Cart</h2>
+                
+                <!-- Cart Items Container -->
+                <div id="cart-items-container">
+                    <div id="cart-items">
+                        <!-- Cart items will be populated by JavaScript -->
+                    </div>
+                    
+                    <!-- Empty Cart Message -->
+                    <div id="empty-cart" style="text-align: center; color: var(--text-light); margin: 3rem 0;">
+                        <div style="font-size: 4rem; margin-bottom: 1rem;">🛒</div>
+                        <p style="font-size: 1.2rem;">Your cart is empty</p>
+                        <a href="menu.html" class="btn btn-primary" style="margin-top: 1rem; text-decoration: none;">Browse Menu</a>
+                    </div>
+                </div>
+                
+                <!-- Promo Code Section -->
+                <div class="promo-section" id="promo-section" style="display: none;">
+                    <h3 class="promo-title">🎟️ Have a Promo Code?</h3>
+                    <div class="promo-input-container">
+                        <input type="text" id="promo-input" class="promo-input" placeholder="Enter promo code " maxlength="20">
+                        <button onclick="applyPromoCode()" class="btn btn-primary">Apply</button>
+                    </div>
+                    <div id="promo-message" class="promo-message"></div>
+                </div>
+                
+                <!-- Cart Summary -->
+                <div id="cart-summary" class="cart-summary" style="display: none;">
+                    <div class="summary-row">
+                        <span>Subtotal:</span>
+                        <span>Rs <span id="subtotal">0</span></span>
+                    </div>
+                    
+                    <div class="summary-row">
+                        <span>Delivery Fee:</span>
+                        <span>Rs <span id="delivery-fee">150</span></span>
+                    </div>
+                    
+                    <div id="discount-line" class="summary-row discount-row">
+                        <span>Discount (<span id="discount-code"></span>):</span>
+                        <span>-Rs <span id="discount-amount">0</span></span>
+                    </div>
+                    
+                    <div class="summary-row">
+                        <span>Tax (5%):</span>
+                        <span>Rs <span id="tax">0</span></span>
+                    </div>
+                    
+                    <hr class="summary-divider">
+                    
+                    <div class="summary-total">
+                        <span>Total:</span>
+                        <span>Rs <span id="total-amount">0</span></span>
+                    </div>
+                    
+                    <button onclick="proceedToCheckout()" class="btn btn-primary" style="width: 100%; padding: 1rem 2rem; font-size: 1.2rem; font-weight: 600;">
+                        Proceed to Checkout
+                    </button>
+                </div>
             </div>
         </div>
     </div>
@@ -67,7 +150,7 @@
                 </div>
                 <div class="footer-section">
                     <h3>Contact</h3>
-                    <p>📞 +1 (555) 123-4567</p>
+                    <p>📞 +92 345 1234567</p>
                     <p>📧 hello@tarka.com</p>
                     <p>📍 123 Food Street, City</p>
                 </div>
