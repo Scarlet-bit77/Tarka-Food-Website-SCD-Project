@@ -4,8 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login - TARKA</title>
-    <link rel="stylesheet" href="style.css">
-    <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script> <!-- for eye icon -->
+    <link rel="stylesheet" href="login.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+
 </head>
 <body>
   <!-- 🔥 Fire Background Video -->
@@ -51,38 +53,51 @@
     <img src="https://i.pinimg.com/originals/2b/a9/36/2ba9369dac767d79411fb3a544fd8563.png"
          alt="Food Left 2" class="side-img left" style="animation-delay: 2s;">
     <img src="https://i.pinimg.com/736x/e9/f8/3b/e9f83b3e44651f65f0e5a1a1259233c5.jpg"
-         alt="Food Left 3" class="side-img left" style="animation-delay: 4s;">
+         alt="Food Left 3" class="side-img left" style="animation-delay: 4s;"> 
+</div>
+ <div class="glass-card" style="padding: 3rem 4rem; border-radius: 25px; max-width: 1200px; width: 95%; margin: 7rem auto; position: relative; overflow: hidden;">
+<form class="login-form" id="auth-form" onsubmit="handleFormSubmit(event)">
+  <div class="toggle-btns">
+      <button type="button" id="signInBtn" class="active">Sign In</button>
+      <button type="button" id="signUpBtn">Sign Up</button>
+  </div>
+
+  <h2 id="form-title" style="text-align: center; margin-bottom: 1.5rem; color: var(--primary-orange);">
+      Welcome Back
+  </h2>
+
+  <!-- Email -->
+  <div class="form-group">
+      <label for="email">Email</label>
+      <input type="email" id="email" placeholder="Enter your email" required>
+      <small id="email-error" style="color: red; display: none;">Enter a valid email address</small>
+  </div>
+
+  <!-- Password -->
+<div class="form-group">
+    <label for="password">Password</label>
+    <input type="password" id="password" placeholder="Enter a password" required>
+    <i class="fa-solid fa-eye password-toggle" id="togglePassword"></i>
+    <small id="password-error" style="color: red; display: none;"></small>
+    <div id="password-strength" style="margin-top: 5px; font-size: 14px;"></div>
 </div>
 
-            <form class="login-form" onsubmit="handleLogin(event)">
-                <h2 style="text-align: center; margin-bottom: 2rem; color: var(--primary-orange);">Welcome Back</h2>
-                
-                <!-- Email Input -->
-                <div class="form-group">
-                    <label for="email">Email Address</label>
-                    <input type="email" id="email" required>
-                </div>
-                
-                <!-- Password Input -->
-                <div class="form-group" style="position: relative;">
-                    <label for="password">Password</label>
-                    <input type="password" id="password" required 
-                        pattern="(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}"
-                        title="Must contain at least 8 characters, one uppercase, one lowercase, one number, and one special character.">
-                    <i class="fas fa-eye" id="togglePassword" 
-                       style="position: absolute; right: 10px; top: 38px; cursor: pointer; color: gray;"></i>
-                    <div id="password-strength" style="margin-top:5px; font-size:14px;"></div>
-                </div>
+<!-- Confirm Password (Signup only) -->
+<div class="form-group" id="confirm-password-group" style="display: none;">
+    <label for="confirmPassword">Confirm Password</label>
+    <input type="password" id="confirmPassword" placeholder="Confirm password">
+    <i class="fa-solid fa-eye password-toggle" id="toggleConfirmPassword"></i>
+    <small id="confirm-error" style="color: red; display: none;">Passwords do not match</small>
+</div>
 
-                <!-- Login Button -->
-                <button type="submit" class="btn btn-primary" style="width: 100%; margin-bottom: 1rem;">Login</button>
-                
-                <!-- Sign Up Link -->
-                <p style="text-align: center;">
-                    Don't have an account? 
-                    <a href="#" style="color: var(--primary-orange);" onclick="showSignup()">Sign up</a>
-                </p>
-            </form>
+  <button type="submit" id="form-button" class="btn btn-primary" 
+          style="width: 100%; margin-bottom: 1rem;">Sign In</button>
+
+  <p id="form-success" class="success-message" 
+     style="color: green; text-align: center; display: none;">Success!</p>
+</form>
+</div>
+
 
            <!-- Right Images (horizontal row) -->
 <div class="side-row">
@@ -91,7 +106,7 @@
     <img src="https://i.pinimg.com/736x/09/fd/c3/09fdc36a5b12c69340180b18b22e7f68.jpg"
          alt="Food Right 2" class="side-img right" style="animation-delay: 3s;">
     <img src="https://i.pinimg.com/originals/38/93/16/3893163c962fb606b38756e3412d76a2.jpg"
-         alt="Food Right 3" class="side-img right" style="animation-delay: 5s;">
+         alt="Food Right 3" class="side-img right" style="animation-delay: 5s;"> 
 </div>
         </div>
     </div>
@@ -113,7 +128,7 @@
                 </div>
                 <div class="footer-section">
                     <h3>Contact</h3>
-                    <p>📞 +1 (555) 123-4567</p>
+                    <p>📞 +92 345-123-4567</p>
                     <p>📧 hello@tarka.com</p>
                     <p>📍 123 Food Street, City</p>
                 </div>
@@ -124,44 +139,180 @@
         </div>
     </footer>
   
+<script>
+(() => {
+  const signInBtn = document.getElementById("signInBtn");
+  const signUpBtn = document.getElementById("signUpBtn");
+  const formTitle = document.getElementById("form-title");
+  const confirmGroup = document.getElementById("confirm-password-group");
+  const formButton = document.getElementById("form-button");
+  const emailInput = document.getElementById("email");
+  const passwordInput = document.getElementById("password");
+  const confirmPasswordInput = document.getElementById("confirmPassword");
+  const togglePassword = document.getElementById("togglePassword");
+  const toggleConfirmPassword = document.getElementById("toggleConfirmPassword");
+  const passwordError = document.getElementById("password-error");
+  const confirmError = document.getElementById("confirm-error");
+  const successMsg = document.getElementById("form-success");
+  const passwordStrength = document.getElementById("password-strength");
 
-    <!-- JavaScript -->
-    <script src="script.js"></script>
-    <script>
-        // Password visibility toggle
-        const togglePassword = document.getElementById('togglePassword');
-        const passwordInput = document.getElementById('password');
-        togglePassword.addEventListener('click', () => {
-            const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
-            passwordInput.setAttribute('type', type);
-            togglePassword.classList.toggle('fa-eye-slash');
-        });
+  let isSignIn = true;
 
-        // Password strength indicator
-        const strengthText = document.getElementById('password-strength');
-        passwordInput.addEventListener('input', () => {
-            const value = passwordInput.value;
-            let strength = 0;
+  // === Toggle Eye Icons ===
+ // === Toggle Eye Icons ===
+togglePassword.addEventListener("click", () => {
+  const type = passwordInput.type === "password" ? "text" : "password";
+  passwordInput.type = type;
+  togglePassword.classList.toggle("fa-eye");
+  togglePassword.classList.toggle("fa-eye-slash");
+});
 
-            if (/[a-z]/.test(value)) strength++;
-            if (/[A-Z]/.test(value)) strength++;
-            if (/\d/.test(value)) strength++;
-            if (/[@$!%*?&]/.test(value)) strength++;
-            if (value.length >= 8) strength++;
+toggleConfirmPassword.addEventListener("click", () => {
+  const type = confirmPasswordInput.type === "password" ? "text" : "password";
+  confirmPasswordInput.type = type;
+  toggleConfirmPassword.classList.toggle("fa-eye");
+  toggleConfirmPassword.classList.toggle("fa-eye-slash");
+});
 
-            if (value.length === 0) {
-                strengthText.textContent = '';
-            } else if (strength <= 2) {
-                strengthText.textContent = 'Weak password';
-                strengthText.style.color = 'red';
-            } else if (strength === 3 || strength === 4) {
-                strengthText.textContent = 'Moderate password';
-                strengthText.style.color = 'orange';
-            } else {
-                strengthText.textContent = 'Strong password';
-                strengthText.style.color = 'green';
-            }
-        });
-    </script>
+  // === Switch Between Sign In / Sign Up ===
+  signInBtn.addEventListener("click", () => toggleForm(true));
+  signUpBtn.addEventListener("click", () => toggleForm(false));
+
+  function toggleForm(signIn) {
+    isSignIn = signIn;
+    confirmGroup.style.display = signIn ? "none" : "block";
+    formTitle.textContent = signIn ? "Welcome Back" : "Create Account";
+    formButton.textContent = signIn ? "Sign In" : "Sign Up";
+
+    signInBtn.classList.toggle("active", signIn);
+    signUpBtn.classList.toggle("active", !signIn);
+    successMsg.style.display = "none";
+    passwordError.style.display = "none";
+    confirmError.style.display = "none";
+    passwordInput.value = "";
+    confirmPasswordInput.value = "";
+  }
+
+  // === Validation Functions ===
+  function validateEmail(email) {
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+  }
+
+  function validatePassword(pwd) {
+    const regex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+    return regex.test(pwd);
+  }
+
+  // === Live Password Strength Feedback ===
+  passwordInput.addEventListener("input", () => {
+    const value = passwordInput.value;
+    let strength = 0;
+    if (/[a-z]/.test(value)) strength++;
+    if (/[A-Z]/.test(value)) strength++;
+    if (/\d/.test(value)) strength++;
+    if (/[@$!%*?&]/.test(value)) strength++;
+    if (value.length >= 8) strength++;
+
+    const levels = ["Weak", "Fair", "Good", "Strong", "Very Strong"];
+    const colors = ["red", "orange", "goldenrod", "green", "darkgreen"];
+    passwordStrength.textContent = value ? `Strength: ${levels[strength - 1] || "Weak"}` : "";
+    passwordStrength.style.color = colors[strength - 1] || "red";
+  });
+
+  // === Handle Form Submission ===
+  document.getElementById("auth-form").addEventListener("submit", (e) => {
+    e.preventDefault();
+    const email = emailInput.value.trim();
+    const pwd = passwordInput.value.trim();
+    const confirm = confirmPasswordInput.value.trim();
+    passwordError.style.display = "none";
+    confirmError.style.display = "none";
+    successMsg.style.display = "none";
+
+    if (!validateEmail(email)) {
+      passwordError.textContent = "Invalid email format";
+      passwordError.style.display = "block";
+      return;
+    }
+
+    if (!validatePassword(pwd)) {
+      passwordError.textContent =
+        "Password must be 8+ chars, include uppercase, lowercase, number, and special character.";
+      passwordError.style.display = "block";
+      return;
+    }
+
+    if (!isSignIn && pwd !== confirm) {
+      confirmError.style.display = "block";
+      return;
+    }
+
+    successMsg.textContent = isSignIn
+      ? "Login successful! Redirecting..."
+      : "Account created successfully!";
+    successMsg.style.display = "block";
+
+    setTimeout(() => (window.location.href = "home.html"), 1500);
+  });
+  // ===== LOGIN RESTRICTION SYSTEM =====
+// Store login status in localStorage
+const setLoggedIn = (status) => {
+    localStorage.setItem('isLoggedIn', status);
+};
+
+const isLoggedIn = () => {
+    return localStorage.getItem('isLoggedIn') === 'true';
+};
+
+// Update the form submission to set login status
+document.getElementById("auth-form").addEventListener("submit", (e) => {
+    e.preventDefault();
+    const email = emailInput.value.trim();
+    const pwd = passwordInput.value.trim();
+    const confirm = confirmPasswordInput.value.trim();
+    passwordError.style.display = "none";
+    confirmError.style.display = "none";
+    successMsg.style.display = "none";
+
+    if (!validateEmail(email)) {
+        passwordError.textContent = "Invalid email format";
+        passwordError.style.display = "block";
+        return;
+    }
+
+    if (!validatePassword(pwd)) {
+        passwordError.textContent =
+            "Password must be 8+ chars, include uppercase, lowercase, number, and special character.";
+        passwordError.style.display = "block";
+        return;
+    }
+
+    if (!isSignIn && pwd !== confirm) {
+        confirmError.style.display = "block";
+        return;
+    }
+
+    // Set user as logged in
+    setLoggedIn(true);
+    
+    successMsg.textContent = isSignIn
+        ? "Login successful! Redirecting..."
+        : "Account created successfully!";
+    successMsg.style.display = "block";
+
+    setTimeout(() => (window.location.href = "home.html"), 1500);
+});
+
+// Check if user is logged in when page loads
+window.addEventListener('DOMContentLoaded', () => {
+    // If user is already logged in, redirect to home
+    if (isLoggedIn() && window.location.pathname.includes('login.html')) {
+        window.location.href = 'home.html';
+    }
+});
+})();
+</script>
+
+
 </body>
 </html>
