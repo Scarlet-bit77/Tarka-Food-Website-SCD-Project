@@ -1,0 +1,815 @@
+/* ===== GLOBAL STYLES ===== */
+body {
+    box-sizing: border-box;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* CSS Variables for Colors */
+:root {
+    --primary-orange: #F55B23;
+    --light-orange: #FF7A47;
+    --dark-orange: #E04A1A;
+    --primary-yellow: #FFD700;
+    --light-yellow: #FFF3CD;
+    --dark-yellow: #F4C430;
+    --white: #FFFFFF;
+    --light-gray: #F8F9FA;
+    --text-dark: #2C3E50;
+    --text-light: #6C757D;
+}
+
+/* Base Body Styling */
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    line-height: 1.6;
+    color: var(--text-dark);
+    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+    overflow-x: hidden;
+}
+
+/* ===== ANIMATED BACKGROUND ELEMENTS ===== */
+.bg-animation {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: -1;
+    overflow: hidden;
+}
+
+.floating-shape {
+    position: absolute;
+    opacity: 0.1;
+    animation: float 6s ease-in-out infinite;
+}
+
+.floating-shape:nth-child(1) {
+    top: 10%;
+    left: 10%;
+    width: 80px;
+    height: 80px;
+    background: var(--primary-orange);
+    border-radius: 50%;
+    animation-delay: 0s;
+}
+
+.floating-shape:nth-child(2) {
+    top: 20%;
+    right: 10%;
+    width: 60px;
+    height: 60px;
+    background: var(--primary-yellow);
+    border-radius: 50%;
+    animation-delay: 2s;
+}
+
+.floating-shape:nth-child(3) {
+    bottom: 20%;
+    left: 20%;
+    width: 100px;
+    height: 100px;
+    background: var(--light-orange);
+    border-radius: 50%;
+    animation-delay: 4s;
+}
+
+.floating-shape:nth-child(4) {
+    bottom: 30%;
+    right: 20%;
+    width: 70px;
+    height: 70px;
+    background: var(--dark-yellow);
+    border-radius: 50%;
+    animation-delay: 1s;
+}
+
+@keyframes float {
+    0%, 100% { transform: translateY(0px) rotate(0deg); }
+    33% { transform: translateY(-20px) rotate(120deg); }
+    66% { transform: translateY(20px) rotate(240deg); }
+}
+
+/* ===== LAYOUT COMPONENTS ===== */
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+/* ===== NAVIGATION STYLES ===== */
+.navbar {
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+    position: fixed;
+    top: 0;
+    width: 100%;
+    z-index: 1000;
+    transition: all 0.3s ease;
+}
+
+.nav-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 0;
+}
+
+
+.logo {
+    font-size: 2rem;
+    font-weight: bold;
+    color: var(--primary-orange);
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: 10px; /* Space between image and text */
+    transition: transform 0.3s ease;
+}
+
+.logo-img {
+    width: 70px;  /* Adjust as needed */
+    height: 70px;
+    border-radius: 50%; /* Optional: makes it circular */
+    object-fit: contain;
+}
+
+.logo:hover {
+    transform: scale(1.05);
+}
+
+.nav-links {
+    display: flex;
+    list-style: none;
+    gap: 2rem;
+    align-items: center;
+}
+
+.nav-links a {
+    text-decoration: none;
+    color: var(--text-dark);
+    font-weight: 500;
+    transition: color 0.3s ease;
+    position: relative;
+}
+
+.nav-links a:hover {
+    color: var(--primary-orange);
+
+}
+
+.nav-links a::after {
+    content: '';
+    position: absolute;
+    bottom: -5px;
+    left: 0;
+    width: 0;
+    height: 2px;
+    background: var(--primary-orange);
+    transition: width 0.3s ease;
+}
+
+.nav-links a:hover::after {
+    width: 100%;
+}
+
+/* ===== BUTTON STYLES ===== */
+.btn {
+    padding: 12px 24px;
+    border: none;
+    border-radius: 25px;
+    font-weight: 600;
+    text-decoration: none;
+    display: inline-block;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-size: 14px;
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, var(--primary-orange), var(--light-orange));
+    color: var(--white);
+}
+
+.btn-primary:hover {
+     background: linear-gradient(135deg, var(--light-orange), #ffd699); /* lighter orange blend */
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(245, 91, 35, 0.4);
+    color: var(--white);
+}
+.btn-primary1 {
+    background: linear-gradient(135deg, var(--primary-orange), var(--light-orange));
+    color: var(--white);
+}
+
+.btn-primary1:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(245, 91, 35, 0.4);
+}
+
+.btn-secondary {
+    background: var(--white);
+    color: var(--primary-orange);
+    border: 2px solid var(--primary-orange);
+}
+
+.btn-secondary:hover {
+    background: var(--primary-orange);
+    color: var(--white);
+}
+
+/* ===== PAGE CONTENT STYLES ===== */
+.page-content {
+    margin-top: 80px;
+    min-height: calc(100vh - 80px);
+    display: none;
+}
+
+.page-content.active {
+    display: block;
+}
+
+/* ===== HERO SECTION STYLES ===== */
+.hero {
+    background: linear-gradient(135deg, rgba(255, 215, 0, 0.9), rgba(245, 91, 35, 0.9)),
+                url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 1000"><defs><pattern id="food-pattern" x="0" y="0" width="100" height="100" patternUnits="userSpaceOnUse"><circle cx="50" cy="50" r="2" fill="%23ffffff" opacity="0.1"/></pattern></defs><rect width="1000" height="1000" fill="url(%23food-pattern)"/></svg>');
+    background-size: cover;
+    background-position: center;
+    padding: 120px 0;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+}
+
+.hero::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(45deg, transparent 30%, rgba(255,255,255,0.1) 50%, transparent 70%);
+    animation: shimmer 3s infinite;
+}
+
+@keyframes shimmer {
+    0% { transform: translateX(-100%); }
+    100% { transform: translateX(100%); }
+}
+
+.hero h1 {
+    font-size: 3.5rem;
+    margin-bottom: 1rem;
+    color: var(--white);
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+    animation: fadeInUp 1s ease, textGlow 2s ease-in-out infinite alternate;
+    position: relative;
+    z-index: 2;
+}
+
+.hero p {
+    font-size: 1.2rem;
+    margin-bottom: 2rem;
+    color: var(--white);
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
+    animation: fadeInUp 1s ease 0.2s both;
+    position: relative;
+    z-index: 2;
+}
+
+.hero-buttons {
+    animation: fadeInUp 1s ease 0.4s both;
+    position: relative;
+    z-index: 2;
+}
+
+@keyframes textGlow {
+    from { text-shadow: 2px 2px 4px rgba(0,0,0,0.3), 0 0 10px rgba(255,255,255,0.3); }
+    to { text-shadow: 2px 2px 4px rgba(0,0,0,0.3), 0 0 20px rgba(255,255,255,0.6); }
+}
+
+.hero-buttons .btn {
+    margin: 0 10px;
+}
+
+
+/* ===== LOGIN PAGE STYLES ===== */
+
+
+.login-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    padding-top: 60px;
+
+    /* 🔥 subtle warm tint */
+    background: rgba(255, 100, 0, 0.08);
+
+    position: relative;
+    overflow: hidden;
+    z-index: 1;
+}
+
+/* ✨ faint glowing particle overlay */
+.login-container::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="20" cy="20" r="2" fill="%23ffffff" opacity="0.05"><animate attributeName="opacity" values="0.05;0.2;0.05" dur="3s" repeatCount="indefinite"/></circle><circle cx="80" cy="40" r="1.5" fill="%23FFD700" opacity="0.08"><animate attributeName="opacity" values="0.08;0.2;0.08" dur="4s" repeatCount="indefinite"/></circle><circle cx="40" cy="80" r="1" fill="%23F55B23" opacity="0.05"><animate attributeName="opacity" values="0.05;0.15;0.05" dur="5s" repeatCount="indefinite"/></circle></svg>');
+    background-size: 200px 200px;
+    animation: backgroundMove 20s linear infinite;
+    opacity: 0.15;
+    z-index: 0;
+}
+
+@keyframes backgroundMove {
+    0% { background-position: 0% 0%; }
+    100% { background-position: 100% 100%; }
+}
+
+.login-form {
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    padding: 2rem;
+    border-radius: 25px;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    width: 100%;
+    max-width: 500px;
+    animation: slideInUp 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    position: relative;
+    z-index: 2;
+}
+
+.login-form::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(45deg, rgba(245, 91, 35, 0.05), rgba(255, 215, 0, 0.05));
+    border-radius: 25px;
+    z-index: -1;
+}
+  /* When login container exists on page, target the nav login button */
+.login-container ~ .navbar .nav-links .btn-primary,
+body:has(.login-container) .nav-links .btn-primary {
+    background: #9ca3af !important;
+    color: var(--white) !important;
+    cursor: not-allowed;
+    opacity: 0.7;
+}
+
+.login-container ~ .navbar .nav-links .btn-primary:hover,
+body:has(.login-container) .nav-links .btn-primary:hover {
+    background: #9ca3af !important;
+    transform: none !important;
+    box-shadow: none !important;
+}
+
+/* ===== FORM STYLES ===== */
+.form-group {
+    margin-bottom: 2rem;
+    position: relative;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 0.8rem;
+    font-weight: 600;
+    color: var(--text-dark);
+    font-size: 14px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.form-group input {
+    width: 100%;
+    padding: 15px 20px;
+    border: 2px solid rgba(233, 236, 239, 0.8);
+    border-radius: 15px;
+    font-size: 16px;
+    background: rgba(255, 255, 255, 0.9);
+    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+    position: relative;
+}
+
+.form-group input:focus {
+    outline: none;
+    border-color: var(--primary-orange);
+    background: rgba(255, 255, 255, 1);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(245, 91, 35, 0.2);
+}
+
+.form-group input::placeholder {
+    color: var(--text-light);
+    transition: opacity 0.3s ease;
+}
+
+.form-group input:focus::placeholder {
+    opacity: 0.7;
+}
+
+/* ✨ shimmer + fade + float animation */
+@keyframes fadeShimmerFloat {
+    0% {
+        opacity: 0;
+        transform: translateY(0);
+        filter: brightness(1);
+    }
+    20% {
+        opacity: 1;
+        filter: brightness(1.1);
+    }
+    50% {
+        opacity: 0.9;
+        transform: translateY(-10px);
+        filter: brightness(1.3);
+    }
+    80% {
+        opacity: 1;
+        transform: translateY(5px);
+        filter: brightness(1.1);
+    }
+    100% {
+        opacity: 0;
+        transform: translateY(0);
+        filter: brightness(1);
+    }
+}
+
+/* 🎞 image styling + animation */
+.side-img {
+    width: 120px;
+    height: auto;
+    border-radius: 20px;
+    opacity: 0;
+    animation: fadeShimmerFloat 8s ease-in-out infinite;
+    filter: drop-shadow(0 0 10px rgba(255, 200, 100, 0.5));
+    transition: transform 0.3s ease, filter 0.3s ease, box-shadow 0.3s ease;
+    transform-style: preserve-3d;
+    pointer-events: auto;
+    position: relative;
+    z-index: 1;
+}
+
+/* direction control */
+.side-img.left { animation-direction: normal; }
+.side-img.right { animation-direction: reverse; }
+
+/* 🧊 horizontal layout for image groups */
+.side-row {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    gap: 20px;
+}
+
+/* 🌟 Hover: grow larger, glow brighter, and lift up */
+.side-img:hover {
+    animation-play-state: paused;
+    transform: scale(1.25) translateY(-8px);
+    filter: brightness(1.6) drop-shadow(0 0 30px rgba(255, 240, 180, 0.9));
+    box-shadow: 0 10px 30px rgba(255, 220, 100, 0.7);
+    cursor: pointer;
+    z-index: 5;
+}
+
+/* 🔥 Fullscreen Fire Background */
+.fire-bg {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  z-index: -3;
+  filter: brightness(0.9) contrast(1.3) saturate(1.3);
+  animation: heatWave 5s ease-in-out infinite;
+  opacity: 0.9;
+}
+
+/* 🌫 Soft white overlay (makes video lighter) */
+.fire-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(5, 5, 5, 0.25); /* adjust this to make bg softer or brighter */
+  z-index: -2;
+  pointer-events: none;
+}
+
+/* 🔥 subtle shimmer of heat */
+@keyframes heatWave {
+  0%, 100% { filter: brightness(0.9) contrast(1.3) saturate(1.3); }
+  50% { filter: brightness(1) contrast(1.25) saturate(1.4); }
+}
+
+/* ===== FOOTER STYLES ===== */
+.footer {
+    background: var(--text-dark);
+    color: var(--white);
+    padding: 3rem 0 1rem;
+    margin-top: 4rem;
+}
+
+.footer-content {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 2rem;
+    margin-bottom: 2rem;
+}
+
+.footer-section h3 {
+    color: var(--primary-orange);
+    margin-bottom: 1rem;
+}
+
+.footer-bottom {
+    text-align: center;
+    padding-top: 2rem;
+    border-top: 1px solid #495057;
+    color: var(--text-light);
+}
+/* ===== Dual Sign In / Sign Up Buttons ===== */
+.toggle-btns {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: transparent;
+  border-radius: 30px;
+  margin-bottom: 1.5rem;
+  gap: 10px;
+}
+
+.toggle-btns button {
+  flex: 1;
+  padding: 10px 0;
+  font-size: 1rem;
+  border: none;
+  border-radius: 30px;
+  background-color: #fff;
+  color: #333;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);
+}
+
+.toggle-btns button.active {
+  background-color: #ffeb3b; /* yellow highlight (like your image) */
+  color: #000;
+  box-shadow: 0 4px 10px rgba(255, 235, 59, 0.5);
+}
+
+.toggle-btns button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+/* ===== PASSWORD TOGGLE STYLES ===== */
+.form-group {
+    position: relative;
+    margin-bottom: 2rem;
+}
+
+/* Add padding to password inputs to make space for eye icon */
+#password, #confirmPassword {
+    padding-right: 45px !important;
+}
+
+/* Eye icon styling - FIXED POSITION */
+#togglePassword, #toggleConfirmPassword {
+    position: absolute;
+    right: 15px;
+    top: 50px; /* Position it properly within the input */
+    cursor: pointer;
+    color: var(--primary-orange) !important; /* Orange color */
+    font-size: 18px;
+    transition: all 0.3s ease;
+    z-index: 10;
+    background: rgba(255, 255, 255, 0.9);
+    padding: 8px;
+    border-radius: 50%;
+    width: 20px;
+    height: 20px;
+    display: flex !important;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Hover effects */
+#togglePassword:hover, #toggleConfirmPassword:hover {
+    color: var(--dark-orange) !important;
+    background: rgba(245, 91, 35, 0.1);
+    transform: scale(1.1);
+}
+
+/* Make sure the icons are visible */
+.fa-eye, .fa-eye-slash {
+    display: inline-block !important;
+    opacity: 1 !important;
+    visibility: visible !important;
+}
+/* ===== GLASS CARD (WIDER VERSION FOR LOGIN PAGE) ===== */
+.glass-card {
+    background: rgba(255, 255, 255, 0.25);
+    backdrop-filter: blur(10px);
+    border-radius: 20px;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+    padding: 3rem 4rem;
+    max-width: 1200px; /* Wider for login page */
+    width: 95%;
+    margin: 7rem auto;
+    position: relative;
+    overflow: hidden;
+}
+
+.glass-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+    animation: shine 3s infinite;
+    z-index: 1;
+}
+
+@keyframes shine {
+    0% {
+        left: -100%;
+    }
+    100% {
+        left: 100%;
+    }
+}
+
+/* Solid white form inside */
+.glass-card .login-form {
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+    padding: 2rem;
+    border-radius: 15px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    position: relative;
+    z-index: 2;
+    max-width: 500px;
+    margin: 0 auto;
+}
+/* ===== WIDER LOGIN FORM ===== */
+.glass-card .login-form {
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+    padding: 2.5rem 3rem; /* Increased padding */
+    border-radius: 15px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    position: relative;
+    z-index: 2;
+    max-width: 600px; /* Increased from 500px to 600px */
+    margin: 0 auto;
+    width: 100%;
+}
+
+/* Make form inputs wider to match new form width */
+.glass-card .login-form .form-group input {
+    width: 100%;
+    padding: 15px 20px;
+    font-size: 16px;
+}
+
+/* Adjust toggle buttons container to be wider */
+.glass-card .login-form .toggle-btns {
+    max-width: 100%;
+}
+
+/* Make the form button wider */
+.glass-card .login-form .btn-primary {
+    width: 100%;
+    padding: 15px;
+    font-size: 16px;
+}
+
+/* Ensure eye icons stay properly positioned with wider inputs */
+.glass-card .login-form .form-group {
+    position: relative;
+}
+
+.glass-card .login-form #togglePassword,
+.glass-card .login-form #toggleConfirmPassword {
+    right: 20px; /* Slightly adjust position for wider form */
+    top: 50px;
+}
+/* ===== FIX NAVBAR SPACING ===== */
+.navbar .container {
+    max-width: 100%;
+    padding: 0 20px;
+}
+
+.nav-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 0;
+    width: 100%;
+}
+
+/* Push logo to the very left */
+.logo {
+    margin-left: 0;
+    padding-left: 0;
+}
+
+/* Push nav links to the very right */
+.nav-links {
+    margin-right: 0;
+    padding-right: 0;
+    gap: 2rem;
+}
+
+/* Optional: Reduce gap between nav items if needed */
+.nav-links {
+    gap: 1.5rem; /* Reduced from 2rem */
+}
+/* ===== LOGIN REQUIRED NOTIFICATION STYLES ===== */
+.login-required-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.8);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+    backdrop-filter: blur(10px);
+}
+
+.login-required-notification {
+    background: white;
+    padding: 2rem;
+    border-radius: 20px;
+    text-align: center;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+    max-width: 400px;
+    width: 90%;
+    border: 2px solid var(--primary-orange);
+    animation: popIn 0.3s ease-out;
+}
+
+@keyframes popIn {
+    0% { transform: scale(0.8); opacity: 0; }
+    100% { transform: scale(1); opacity: 1; }
+}
+
+.login-required-notification h3 {
+    color: var(--primary-orange);
+    margin-bottom: 1rem;
+    font-size: 1.5rem;
+}
+
+.login-required-notification p {
+    margin-bottom: 1.5rem;
+    color: var(--text-dark);
+    line-height: 1.5;
+}
+
+.login-redirect-btn {
+    background: linear-gradient(135deg, var(--primary-orange), var(--light-orange));
+    color: white;
+    border: none;
+    padding: 12px 30px;
+    border-radius: 25px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-size: 16px;
+}
+
+.login-redirect-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(245, 91, 35, 0.4);
+}
