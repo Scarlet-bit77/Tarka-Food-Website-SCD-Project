@@ -1,0 +1,18 @@
+/* ===== Keyboard Navigation Focus Styles ===== */
+
+/* Remove default focus outline for all focusable elements */
+:focus {
+    outline: none;
+}
+
+/* Add orange underline for focused elements using border */
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible,
+button:focus-visible,
+a:focus-visible {
+    outline: none;             /* remove default outline */
+    border-bottom: 3px solid #e30a61; /* orange underline */
+    padding-bottom: 2px;       /* space for the underline */
+    transition: border-color 0.2s ease; /* smooth transition */
+}
