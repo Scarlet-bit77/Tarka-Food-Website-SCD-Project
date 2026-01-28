@@ -1,9 +1,10 @@
-
 // ===== APPLICATION STATE =====
 let cart = [];
+let favorites = [];
 let currentOrder = null;
 let appliedPromo = null;
-let userLoggedIn = false; // Changed variable name to avoid conflict
+let userLoggedIn = false;
+
 // ===== MENU DATA =====
 const menuItems = [
     // Pizza Category
@@ -97,7 +98,8 @@ const categoryNames = {
     "dessert": "Desserts & Sweets",
     "desi-specials": "Desi Specials"
 };
-   // ===== LOGIN CHECK FOR ALL PAGES =====
+
+// ===== LOGIN CHECK FOR ALL PAGES =====
 const isLoggedIn = () => {
     return localStorage.getItem('isLoggedIn') === 'true';
 };
@@ -112,10 +114,10 @@ function updateNavigation() {
         authButton.href = '#';
         authButton.onclick = function(e) {
             e.preventDefault();
-            // Perform logout
             localStorage.setItem('isLoggedIn', 'false');
             localStorage.removeItem('tarkaCart');
             localStorage.removeItem('tarkaCurrentOrder');
+            localStorage.removeItem('tarkaFavorites');
             window.location.href = 'welcome.html';
         };
     } else {
@@ -125,94 +127,125 @@ function updateNavigation() {
     }
 }
 
-// Check login status when page loads
-document.addEventListener('DOMContentLoaded', function() {
-    // Login restriction check
-    if (!isLoggedIn() && !window.location.pathname.includes('login.html')) {
-        // Show login required notification
-        showLoginRequired();
+// ===== FAVORITES FUNCTIONS =====
+function loadFavoritesFromStorage() {
+    const savedFavorites = localStorage.getItem('tarkaFavorites');
+    if (savedFavorites) {
+        favorites = JSON.parse(savedFavorites);
+    }
+}
+
+function saveFavoritesToStorage() {
+    localStorage.setItem('tarkaFavorites', JSON.stringify(favorites));
+}
+
+// ===== FAVORITES DISPLAY =====
+function displayFavorites() {
+    loadFavoritesFromStorage();
+    
+    const favoritesContainer = document.getElementById('favorites-container');
+    const emptyState = document.getElementById('empty-favorites');
+    
+    if (!favoritesContainer || !emptyState) return;
+    
+    if (favorites.length === 0) {
+        favoritesContainer.style.display = 'none';
+        emptyState.style.display = 'block';
+        return;
     }
     
-    // ADD THIS LINE: Update the login/logout button
-    updateNavigation();
-
-    // Optional: Add click event listeners to nav links to check login status
-    const navLinks = document.querySelectorAll('.nav-links a:not([href="login.html"])');
+    favoritesContainer.style.display = 'grid';
+    emptyState.style.display = 'none';
     
-    navLinks.forEach(link => {
-        link.addEventListener('click', function(e) {
-            if (!isLoggedIn()) {
-                e.preventDefault();
-                showLoginRequired();
-            }
-        });
-    });
-});
-
-// Show login required notification
-function showLoginRequired() {
-    // Create overlay
-    const overlay = document.createElement('div');
-    overlay.style.cssText = `
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background: rgba(0, 0, 0, 0.8);
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        z-index: 9999;
-        backdrop-filter: blur(10px);
-    `;
-    
-    // Create notification box
-    const notification = document.createElement('div');
-    notification.style.cssText = `
-        background: white;
-        padding: 2rem;
-        border-radius: 20px;
-        text-align: center;
-        box-shadow: 0 20px 60px rgba(0,0,0,0.3);
-        max-width: 400px;
-        width: 90%;
-        border: 2px solid #F55B23;
-    `;
-    
-    notification.innerHTML = `
-        <h3 style="color: #F55B23; margin-bottom: 1rem;">🔐 Login Required</h3>
-        <p style="margin-bottom: 1.5rem; color: #2C3E50;">Please login or sign up to access this page.</p>
-        <button onclick="redirectToLogin()" style="
-            background: linear-gradient(135deg, #F55B23, #FF7A47);
-            color: white;
-            border: none;
-            padding: 12px 30px;
-            border-radius: 25px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        ">Go to Login</button>
-    `;
-    
-    overlay.appendChild(notification);
-    document.body.appendChild(overlay);
-    
-    // Prevent scrolling
-    document.body.style.overflow = 'hidden';
+    favoritesContainer.innerHTML = favorites.map(item => {
+        return `
+            <div class="fav-card" onclick="openItemDetailFromFavorites(${item.id})">
+                <div class="fav-image-container">
+                    <img src="${item.image}" alt="${item.name}">
+                    <button class="fav-heart-btn" onclick="event.stopPropagation(); removeFavoriteItem(${item.id})">
+                        ❤️
+                    </button>
+                </div>
+                <div class="fav-card-content">
+                    <div class="fav-name-rating">
+                        <h3>${item.name}</h3>
+                        <div class="fav-rating">
+                         ${createStarRating(item.rating)} <span>${item.rating}</span>
+                        </div>
+                    </div>
+                    <p class="price">Rs ${item.price}</p>
+                </div>
+            </div>
+        `;
+    }).join('');
 }
 
-// Redirect to login page
-function redirectToLogin() {
-    window.location.href = 'login.html';
+function removeFavoriteItem(itemId) {
+    const item = menuItems.find(i => i.id === itemId);
+    if (!item) return;
+    
+    const existingIndex = favorites.findIndex(fav => fav.id === itemId);
+    
+    if (existingIndex > -1) {
+        favorites.splice(existingIndex, 1);
+        showNotification(`${item.name} removed from favorites`);
+        saveFavoritesToStorage();
+        displayFavorites();
+    }
 }
+
+function openItemDetailFromFavorites(itemId) {
+    window.location.href = `menu.html?itemId=${itemId}`;
+}
+
+function toggleFavorite(itemId, event) {
+    if (event) {
+        event.stopPropagation();
+        event.preventDefault();
+    }
+    
+    const item = menuItems.find(i => i.id === itemId);
+    const existingIndex = favorites.findIndex(fav => fav.id === itemId);
+    
+    if (existingIndex > -1) {
+        favorites.splice(existingIndex, 1);
+        showNotification(`${item.name} removed from favorites`);
+    } else {
+        favorites.push(item);
+        showNotification(`${item.name} added to favorites! ❤️`);
+    }
+    
+    saveFavoritesToStorage();
+    loadMenu();
+}
+
+function toggleFavoriteDetail(itemId) {
+    const item = menuItems.find(i => i.id === itemId);
+    const existingIndex = favorites.findIndex(fav => fav.id === itemId);
+    
+    if (existingIndex > -1) {
+        favorites.splice(existingIndex, 1);
+        showNotification(`${item.name} removed from favorites`);
+    } else {
+        favorites.push(item);
+        showNotification(`${item.name} added to favorites! ❤️`);
+    }
+    
+    saveFavoritesToStorage();
+    
+    const heartBtn = document.getElementById(`detail-heart-btn-${itemId}`);
+    if (heartBtn) {
+        const isFavorite = favorites.some(fav => fav.id === itemId);
+        heartBtn.innerHTML = isFavorite ? '❤️' : '🤍';
+    }
+}
+
 // ===== MENU FUNCTIONS =====
 function loadMenu(filter = null) {
     const menuContainer = document.getElementById('menu-container');
     if (!menuContainer) return;
     
     if (filter) {
-        // Show specific category
         const filteredItems = menuItems.filter(item => item.category === filter);
         const categoryName = categoryNames[filter] || filter;
         
@@ -225,7 +258,6 @@ function loadMenu(filter = null) {
             </div>
         `;
     } else {
-        // Show all categories
         const categories = [...new Set(menuItems.map(item => item.category))];
         
         menuContainer.innerHTML = categories.map(category => {
@@ -251,12 +283,10 @@ function createStarRating(rating) {
     
     let starsHTML = '<div style="display: inline-flex; align-items: center;">';
     
-    // Add full stars (yellow)
     for (let i = 0; i < fullStars; i++) {
         starsHTML += '<span style="color: #FFD700; font-size: 1rem;">★</span>';
     }
     
-    // Add half star if needed (half yellow, half white)
     if (hasHalfStar) {
         starsHTML += `
             <span style="position: relative; display: inline-block; font-size: 1rem;">
@@ -266,7 +296,6 @@ function createStarRating(rating) {
         `;
     }
     
-    // Add empty stars (gray)
     for (let i = 0; i < emptyStars; i++) {
         starsHTML += '<span style="color: #E5E5E5; font-size: 1rem;">★</span>';
     }
@@ -276,37 +305,55 @@ function createStarRating(rating) {
 }
 
 function createFoodItemHTML(item) {
+    loadFavoritesFromStorage();
+    const isFavorite = favorites.some(fav => fav.id === item.id);
+    const favoriteColor = isFavorite ? '#F55B23' : '#ccc';
+    const favoriteIcon = isFavorite ? '❤️' : '🤍';
+    
     return `
-        <div class="food-item" onclick="openItemDetail(${item.id})" style="cursor: pointer;">
+        <div class="food-item" onclick="openItemDetail(${item.id})">
             <div class="food-image">
                 <img src="${item.image}" alt="${item.name}" style="width: 120px; height: 85px; object-fit: cover; border-radius: 10px;">
             </div>  
             <div class="food-info">
                 <div class="food-details">
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+                    <div class="food-name-row">
                         <div class="food-name">${item.name}</div>
-                        <div style="color: var(--primary-orange); font-weight: 600; font-size: 0.9rem; display: flex; align-items: center; gap: 0.3rem;">
+                        <button onclick="event.stopPropagation(); toggleFavorite(${item.id}, event); return false;" 
+                            class="heart-btn"
+                            style="color: ${favoriteColor}; background: none; border: none; cursor: pointer; font-size: 1.2rem;">
+                            ${favoriteIcon}
+                        </button>
+                    </div>
+                    
+                    <div class="food-bottom-row">
+                        <div class="food-rating" style="color: var(--primary-orange); font-weight: 600; font-size: 0.9rem; display: flex; align-items: center; gap: 0.3rem;">
                             ${createStarRating(item.rating)} <span>${item.rating}</span>
                         </div>
+                        <div class="food-price">Rs ${item.price}</div>
                     </div>
-                    <div class="food-price">Rs ${item.price}</div>
                 </div>
             </div>
         </div>
     `;
 }
 
-// ===== ITEM DETAIL FUNCTIONS =====
 function openItemDetail(itemId) {
     const item = menuItems.find(i => i.id === itemId);
     if (!item) return;
 
-    // 👇 First, instantly move the page view to the top before showing content
     window.scrollTo(0, 0);
+    
+    loadFavoritesFromStorage();
+    const isFavorite = favorites.some(fav => fav.id === itemId);
+    const heartIcon = isFavorite ? '❤️' : '🤍';
 
     const detailContent = document.getElementById('item-detail-content');
     detailContent.innerHTML = `
-        <div style="text-align: center; margin-bottom: 2rem;">
+        <div style="text-align: center; margin-bottom: 2rem; position: relative;">
+            <button id="detail-heart-btn-${itemId}" onclick="toggleFavoriteDetail(${itemId})" style="position: absolute; top: 10px; right: 10px; background: rgba(255,255,255,0.9); border: none; border-radius: 50%; width: 50px; height: 50px; cursor: pointer; font-size: 1.5rem; box-shadow: 0 2px 10px rgba(0,0,0,0.2); transition: transform 0.2s ease;">
+                ${heartIcon}
+            </button>
             <img src="${item.image}" alt="${item.name}" style="width: 460px; height: 350px; border-radius: 15px; object-fit: cover; margin-bottom: 1rem;">
             <h1 style="font-size: 2.5rem; color: var(--text-dark); margin-bottom: 0.5rem;">${item.name}</h1>
             <p style="font-size: 2rem; color: var(--primary-orange); font-weight: bold;">Rs ${item.price}</p>
@@ -324,7 +371,6 @@ function openItemDetail(itemId) {
         </div>
     `;
 
-    // Hide menu page and show detail page
     document.getElementById('menu-page').style.display = 'none';
     document.getElementById('detail-page').style.display = 'block';
 }
@@ -332,10 +378,40 @@ function openItemDetail(itemId) {
 function goBackToMenu() {
     document.getElementById('detail-page').style.display = 'none';
     document.getElementById('menu-page').style.display = 'block';
+    
+    loadFavoritesFromStorage();
+    loadMenu();
 }
 
 // ===== CART FUNCTIONS =====
-function loadCartFromStorage() {
+async function loadCartFromStorage() {
+    try {
+        const userId = localStorage.getItem('userId');
+        if (userId) {
+            // Try to load cart from backend
+            const response = await fetch(`http://localhost:3000/api/cart/${userId}`);
+            if (response.ok) {
+                const result = await response.json();
+                if (result.success && result.cart && result.cart.items) {
+                    cart = result.cart.items.map(cartItem => ({
+                        id: parseInt(cartItem.product_id),
+                        name: cartItem.name,
+                        price: cartItem.price,
+                        quantity: cartItem.quantity,
+                        image: cartItem.image,
+                        category: menuItems.find(m => m.id === parseInt(cartItem.product_id))?.category || 'unknown'
+                    }));
+                    console.log('✅ Cart loaded from backend');
+                    updateCartCount();
+                    return;
+                }
+            }
+        }
+    } catch (error) {
+        console.log('⚠️ Using localStorage cart:', error);
+    }
+    
+    // Fallback to localStorage
     const savedCart = localStorage.getItem('tarkaCart');
     if (savedCart) {
         cart = JSON.parse(savedCart);
@@ -347,21 +423,79 @@ function saveCartToStorage() {
     localStorage.setItem('tarkaCart', JSON.stringify(cart));
 }
 
-function addToCart(itemId) {
+// ===== UPDATED: addToCart with backend integration =====
+async function addToCart(itemId) {
     const item = menuItems.find(i => i.id === itemId);
-    const existingItem = cart.find(i => i.id === itemId);
-    
-    if (existingItem) {
-        existingItem.quantity += 1;
-    } else {
-        cart.push({ ...item, quantity: 1 });
+    if (!item) return alert("Item not found!");
+
+    const userId = localStorage.getItem('userId'); 
+    if (!userId) {
+        alert("Please log in to add items to your cart.");
+        window.location.href = 'login.html';
+        return;
     }
+
+    const payload = {
+        user_id: userId,
+        item: {
+            product_id: item.id.toString(),
+            name: item.name,
+            price: item.price,
+            quantity: 1,
+            image: item.image,
+            total: item.price
+        }
+    };
     
-    updateCartCount();
-    saveCartToStorage();
-    
-    showNotification(`${item.name} added to cart!`);
-    updateCartDisplay();
+    try {
+        const response = await fetch("http://localhost:3000/api/cart/add", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(payload)
+        });
+
+        const result = await response.json();
+
+        if (response.ok && result.success) {
+            // Update local cart from response
+            if (result.cart && result.cart.items) {
+                cart = result.cart.items.map(cartItem => ({
+                    id: parseInt(cartItem.product_id),
+                    name: cartItem.name,
+                    price: cartItem.price,
+                    quantity: cartItem.quantity,
+                    image: cartItem.image,
+                    category: menuItems.find(m => m.id === parseInt(cartItem.product_id))?.category || 'unknown'
+                }));
+                saveCartToStorage();
+            }
+            
+            updateCartCount();
+            updateCartDisplay();
+            
+            showNotification(`${item.name} added to cart!`);
+        } else {
+            alert(result.message || "Failed to add item to cart.");
+        }
+    } catch (err) {
+        console.error(err);
+        // Fallback to local storage
+        const existingItem = cart.find(i => i.id === itemId);
+        if (existingItem) {
+            existingItem.quantity += 1;
+        } else {
+            cart.push({ 
+                ...item, 
+                quantity: 1,
+                product_id: item.id.toString() 
+            });
+        }
+        
+        saveCartToStorage();
+        updateCartCount();
+        updateCartDisplay();
+        showNotification(`${item.name} added to cart! (offline mode)`);
+    }
 }
 
 function removeFromCart(itemId) {
@@ -370,6 +504,35 @@ function removeFromCart(itemId) {
     saveCartToStorage();
     updateCartDisplay();
     showNotification('Item removed from cart');
+}
+
+async function removeFromCartBackend(itemId) {
+    const userId = localStorage.getItem('userId');
+    if (!userId) {
+        removeFromCart(itemId);
+        return;
+    }
+
+    try {
+        const response = await fetch("http://localhost:3000/api/cart/remove", {
+            method: "DELETE",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+                user_id: userId,
+                product_id: itemId.toString()
+            })
+        });
+
+        const result = await response.json();
+        if (response.ok && result.success) {
+            removeFromCart(itemId);
+        } else {
+            removeFromCart(itemId);
+        }
+    } catch (error) {
+        console.error("Backend remove failed:", error);
+        removeFromCart(itemId);
+    }
 }
 
 function updateQuantity(itemId, change) {
@@ -401,7 +564,6 @@ function updateCartDisplay() {
     const promoSection = document.getElementById('promo-section');
     const cartCount = document.getElementById('cart-count');
 
-    // Update cart count in navbar
     if (cartCount) {
         cartCount.textContent = cart.reduce((sum, item) => sum + item.quantity, 0);
     }
@@ -421,18 +583,15 @@ function updateCartDisplay() {
     if (cartItemsContainer) {
         cartItemsContainer.innerHTML = cart.map(item => `
             <div class="cart-item">
-                <!-- Item Image -->
                 <div class="cart-item-image">
                     <img src="${item.image}" alt="${item.name}">
                 </div>
                 
-                <!-- Item Details -->
                 <div class="cart-item-details">
                     <h4 class="cart-item-name">${item.name}</h4>
                     <p class="cart-item-price">Rs ${item.price}</p>
                 </div>
                 
-                <!-- Quantity Controls -->
                 <div class="quantity-controls">
                     <div class="quantity-selector">
                         <button onclick="updateQuantity(${item.id}, -1)" class="quantity-btn">-</button>
@@ -440,8 +599,7 @@ function updateCartDisplay() {
                         <button onclick="updateQuantity(${item.id}, 1)" class="quantity-btn">+</button>
                     </div>
                     
-                    <!-- Professional Dustbin Icon -->
-                    <button onclick="removeFromCart(${item.id})" class="delete-btn" title="Remove from cart">
+                    <button onclick="removeFromCartBackend(${item.id})" class="delete-btn" title="Remove from cart">
                         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                             <polyline points="3,6 5,6 21,6"></polyline>
                             <path d="m19,6v14a2,2 0 0,1 -2,2H7a2,2 0 0,1 -2,-2V6m3,0V4a2,2 0 0,1 2,-2h4a2,2 0 0,1 2,2v2"></path>
@@ -464,7 +622,6 @@ function applyPromoCode() {
     
     const promoCode = promoInput.value.trim().toUpperCase();
     
-    // Define available promo codes
     const promoCodes = {
         'SAVE10': { discount: 10, type: 'percentage', description: '10% off' },
         'SAVE20': { discount: 20, type: 'percentage', description: '20% off' },
@@ -484,7 +641,7 @@ function applyPromoCode() {
             code: promoCode,
             ...promoCodes[promoCode]
         };
-         showPromoMessage(`✅ Promo code applied! ${appliedPromo.description}`, 'success');
+        showPromoMessage(`✅ Promo code applied! ${appliedPromo.description}`, 'success');
         promoInput.disabled = true;
         updateCartTotals();
     } else {
@@ -505,7 +662,6 @@ function updateCartTotals() {
     const subtotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
     const deliveryFee = subtotal > 0 ? 150 : 0;
     
-    // Calculate discount
     let discountAmount = 0;
     if (appliedPromo) {
         if (appliedPromo.type === 'percentage') {
@@ -514,7 +670,6 @@ function updateCartTotals() {
             discountAmount = appliedPromo.discount;
         }
         
-        // Show discount line
         const discountLine = document.getElementById('discount-line');
         const discountCode = document.getElementById('discount-code');
         const discountAmountElement = document.getElementById('discount-amount');
@@ -542,14 +697,12 @@ function updateCartTotals() {
     if (totalElement) totalElement.textContent = total;
 }
 
-
 function proceedToCheckout() {
     if (cart.length === 0) {
         showNotification('Your cart is empty!');
         return;
     }
     
-    // Save the current cart state with applied promo to localStorage
     const checkoutState = {
         cart: cart,
         appliedPromo: appliedPromo,
@@ -560,117 +713,151 @@ function proceedToCheckout() {
     
     localStorage.setItem('tarkaCheckoutState', JSON.stringify(checkoutState));
     
-    // Redirect to checkout page
     window.location.href = 'checkout.html';
 }
-function handleCheckout(event) {
-    event.preventDefault();
-    
-    if (cart.length === 0) {
-        showNotification('Your cart is empty!');
-        return;
-    }
 
-    // Get delivery time selection
-    const deliveryTimeRadio = document.querySelector('input[name="deliveryTime"]:checked');
-    const deliveryTime = deliveryTimeRadio ? deliveryTimeRadio.value : 'asap';
-    
-    // Calculate estimated delivery time
-    let estimatedTime = '';
-    if (deliveryTime === 'asap') {
-        estimatedTime = '25-35 minutes';
-    } else {
-        estimatedTime = '35-45 minutes';
+// ===== ORDER FUNCTIONS =====
+function generateOrderId() {
+    const randomNumber = Math.floor(Math.random() * 90000) + 10000;
+    return `#TKA${randomNumber}`;
+}
+
+function getDisplayOrderId(order) {
+    if (order.orderId && order.orderId.startsWith('#TKA')) {
+        return order.orderId;
     }
     
-    // Calculate final totals with promo
-    const subtotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-    const deliveryFee = subtotal > 0 ? 150 : 0;
+    if (order.orderId && order.orderId.startsWith('TKA')) {
+        return `#${order.orderId}`;
+    }
     
-    let discountAmount = 0;
-    if (appliedPromo) {
-        if (appliedPromo.type === 'percentage') {
-            discountAmount = Math.round(subtotal * (appliedPromo.discount / 100));
-        } else {
-            discountAmount = appliedPromo.discount;
+    if (order.orderId) {
+        const numbers = order.orderId.replace(/\D/g, '');
+        if (numbers.length >= 5) {
+            return `#TKA${numbers.substring(0, 5)}`;
         }
     }
     
-    const discountedSubtotal = Math.max(0, subtotal - discountAmount);
-    const tax = Math.round(discountedSubtotal * 0.05);
-    const total = discountedSubtotal + deliveryFee + tax;
+    if (order._id) {
+        const idStr = order._id.toString();
+        const numbers = idStr.replace(/\D/g, '');
+        if (numbers.length >= 5) {
+            return `#TKA${numbers.slice(-5)}`;
+        }
+    }
     
-    // Save order details with discounted total - FIX: Add initial status
-    const orderDetails = {
-        id: Math.floor(Math.random() * 100000),
-        items: [...cart],
-        deliveryTime: deliveryTime,
-        estimatedDelivery: estimatedTime,
-        timestamp: new Date().toISOString(),
-        customerName: document.getElementById('fullName')?.value || '',
-        phone: document.getElementById('phone')?.value || '',
-        address: document.getElementById('address')?.value || '',
-        subtotal: subtotal,
-        discount: discountAmount,
-        deliveryFee: deliveryFee,
-        tax: tax,
-        total: total,
-        appliedPromo: appliedPromo,
-        status: 'confirmed' // ADD THIS: Initialize with first status
-    };
+    if (order.id) {
+        const numbers = order.id.toString().replace(/\D/g, '');
+        if (numbers.length >= 5) {
+            return `#TKA${numbers.substring(0, 5)}`;
+        }
+    }
     
-    // Save to localStorage
-    localStorage.setItem('tarkaCurrentOrder', JSON.stringify(orderDetails));
-    localStorage.setItem('tarkaOrderDetails', JSON.stringify(orderDetails));
-    
-    // Set currentOrder globally
-    currentOrder = orderDetails;
-    
-    // Clear cart and checkout state
-    cart = [];
-    appliedPromo = null;
-    saveCartToStorage();
-    updateCartCount();
-    localStorage.removeItem('tarkaCheckoutState');
-    
-    // Redirect to confirmation page
-    window.location.href = 'confirmation.html';
+    const timestamp = order.timestamp || order.date || Date.now();
+    const timestampStr = timestamp.toString();
+    const last5Digits = timestampStr.slice(-5);
+    return `#TKA${last5Digits}`;
 }
 
-
-function calculateSubtotal() {
-    return cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-}
-
-function calculateDiscount() {
-    if (!appliedPromo) return 0;
-    
-    const subtotal = calculateSubtotal();
-    if (appliedPromo.type === 'percentage') {
-        return Math.round(subtotal * (appliedPromo.discount / 100));
-    } else {
-        return appliedPromo.discount;
+function convertExistingOrdersToTKA() {
+    try {
+        let orders = JSON.parse(localStorage.getItem('tarkaOrders') || '[]');
+        let changed = false;
+        
+        const convertedOrders = orders.map(order => {
+            if (order.orderId && !order.orderId.startsWith('#TKA')) {
+                console.log(`🔄 Converting order ID: ${order.orderId} -> TKA format`);
+                
+                const numbers = order.orderId.toString().replace(/\D/g, '');
+                if (numbers.length >= 5) {
+                    order.orderId = `#TKA${numbers.substring(0, 5)}`;
+                } else {
+                    order.orderId = generateOrderId();
+                }
+                
+                order.id = order.orderId;
+                changed = true;
+            }
+            return order;
+        });
+        
+        if (changed) {
+            localStorage.setItem('tarkaOrders', JSON.stringify(convertedOrders));
+            console.log('✅ Converted existing orders to TKA format');
+        }
+        
+        return convertedOrders;
+    } catch (error) {
+        console.error('❌ Error converting orders:', error);
+        return [];
     }
 }
 
-function calculateTotal() {
-    const subtotal = calculateSubtotal();
-    const discount = calculateDiscount();
-    const deliveryFee = subtotal > 0 ? 150 : 0;
-    const discountedSubtotal = Math.max(0, subtotal - discount);
-    const tax = Math.round(discountedSubtotal * 0.05);
-    return discountedSubtotal + deliveryFee + tax;
+function saveOrderToProfile(orderData) {
+    try {
+        let orders = JSON.parse(localStorage.getItem('tarkaOrders') || '[]');
+        
+        if (!orderData.orderId || !orderData.orderId.startsWith('#TKA')) {
+            if (orderData.orderId) {
+                const numbers = orderData.orderId.toString().replace(/\D/g, '');
+                if (numbers.length >= 5) {
+                    orderData.orderId = `#TKA${numbers.substring(0, 5)}`;
+                } else {
+                    orderData.orderId = generateOrderId();
+                }
+            } else {
+                orderData.orderId = generateOrderId();
+            }
+        }
+        
+        orderData.id = orderData.orderId;
+        
+        console.log('💾 Saving order with TKA ID:', orderData.orderId);
+        
+        orders.push(orderData);
+        
+        localStorage.setItem('tarkaOrders', JSON.stringify(orders));
+        
+        console.log('✅ Order saved to tarkaOrders with TKA ID:', orderData.orderId);
+        console.log('📊 Total orders in storage:', orders.length);
+        
+        return true;
+    } catch (error) {
+        console.error('❌ Error saving order:', error);
+        return false;
+    }
 }
 
-
-
-
+function autoFillUserInfo() {
+    const userEmail = localStorage.getItem('userEmail');
+    if (!userEmail) return;
+    
+    const savedProfile = JSON.parse(localStorage.getItem('tarkaProfile') || '{}');
+    
+    if (savedProfile[userEmail]) {
+        const profile = savedProfile[userEmail];
+        
+        const phoneField = document.getElementById('phone');
+        if (profile.phone && phoneField && !phoneField.value) {
+            phoneField.value = profile.phone;
+        }
+        
+        const addressField = document.getElementById('address');
+        if (profile.address && addressField && !addressField.value) {
+            addressField.value = profile.address;
+        }
+        
+        const storedUsers = JSON.parse(localStorage.getItem('tarkaUsers') || '{}');
+        const userData = storedUsers[userEmail];
+        const nameField = document.getElementById('fullName');
+        if (userData && userData.username && nameField && !nameField.value) {
+            nameField.value = userData.username;
+        }
+    }
+}
 
 // ===== CHECKOUT FUNCTIONS =====
-
- 
 function updateCheckoutDisplay() {
-    // Update order review in checkout page
     const cartItemsPreview = document.getElementById('cart-items-preview');
     const itemCount = document.getElementById('item-count');
     const orderItems = document.getElementById('order-items');
@@ -705,14 +892,13 @@ function updateCheckoutDisplay() {
         }
     }
     
-    // Update totals in checkout page
     updateCheckoutTotal();
 }
-  function updateCheckoutTotal(checkoutCart = cart, checkoutPromo = appliedPromo) {
+
+function updateCheckoutTotal(checkoutCart = cart, checkoutPromo = appliedPromo) {
     const subtotal = checkoutCart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
     const deliveryFee = subtotal > 0 ? 150 : 0;
     
-    // Calculate discount based on promo
     let discountAmount = 0;
     if (checkoutPromo) {
         if (checkoutPromo.type === 'percentage') {
@@ -737,7 +923,6 @@ function updateCheckoutDisplay() {
     if (taxElement) taxElement.textContent = `Rs ${tax}`;
     if (totalElement) totalElement.textContent = total;
     
-    // Show discount if applied
     if (discountElement) {
         if (discountAmount > 0) {
             discountElement.innerHTML = `
@@ -754,15 +939,12 @@ function updateCheckoutDisplay() {
 
 // ===== CONFIRMATION PAGE FUNCTIONS =====
 function displayOrderConfirmation() {
-    // Check if we're on the confirmation page
     if (!document.querySelector('.confirmation-container')) {
         return;
     }
 
-    // Get order details from localStorage
     const orderDetails = JSON.parse(localStorage.getItem('tarkaOrderDetails')) || {};
     
-    // Display order items
     const orderItemsContainer = document.getElementById('confirmation-order-items');
     const subtotalElement = document.getElementById('confirmation-subtotal');
     const deliveryElement = document.getElementById('confirmation-delivery');
@@ -773,7 +955,6 @@ function displayOrderConfirmation() {
     const orderIdElement = document.getElementById('order-id');
     const discountElement = document.getElementById('confirmation-discount');
     
-    // Display delivery time from order details
     if (deliveryTimeElement) {
         if (orderDetails.estimatedDelivery) {
             deliveryTimeElement.textContent = orderDetails.estimatedDelivery;
@@ -782,9 +963,9 @@ function displayOrderConfirmation() {
         }
     }
     
-    // Display order ID
     if (orderIdElement) {
-        orderIdElement.textContent = `#TKA${orderDetails.id || Math.random().toString(36).substr(2, 6).toUpperCase()}`;
+        const orderId = getDisplayOrderId(orderDetails);
+        orderIdElement.textContent = orderId;
     }
     
     if (orderItemsContainer) {
@@ -804,18 +985,14 @@ function displayOrderConfirmation() {
         }
     }
     
-    // Calculate totals WITH DISCOUNT from order details
     const items = orderDetails.items || [];
     const subtotal = items.reduce((sum, item) => sum + (item.price * item.quantity), 0);
     const deliveryFee = subtotal > 0 ? 150 : 0;
     
-    // Use the discount from order details if available, otherwise calculate from appliedPromo
     let discountAmount = 0;
     if (orderDetails.discount !== undefined) {
-        // Use the discount that was saved during checkout
         discountAmount = orderDetails.discount;
     } else if (orderDetails.appliedPromo) {
-        // Calculate discount from saved promo
         const appliedPromo = orderDetails.appliedPromo;
         if (appliedPromo.type === 'percentage') {
             discountAmount = Math.round(subtotal * (appliedPromo.discount / 100));
@@ -828,14 +1005,12 @@ function displayOrderConfirmation() {
     const tax = Math.round(discountedSubtotal * 0.05);
     const grandTotal = discountedSubtotal + deliveryFee + tax;
     
-    // Update totals
     if (subtotalElement) subtotalElement.textContent = `Rs ${subtotal}`;
     if (deliveryElement) deliveryElement.textContent = `Rs ${deliveryFee}`;
     if (taxElement) taxElement.textContent = `Rs ${tax}`;
     if (grandTotalElement) grandTotalElement.textContent = `Rs ${grandTotal}`;
     if (orderTotalElement) orderTotalElement.textContent = `Rs ${grandTotal}`;
     
-    // Show discount line if there was a discount
     if (discountElement) {
         if (discountAmount > 0) {
             discountElement.innerHTML = `
@@ -851,16 +1026,12 @@ function displayOrderConfirmation() {
     }
 }
 
-
-
-// ===== DELIVERY TIME FUNCTIONS =====
 function setupDeliveryTime() {
     const asapRadio = document.getElementById('asap');
     const scheduleRadio = document.getElementById('schedule');
     const scheduleTime = document.getElementById('schedule-time');
     
     if (asapRadio && scheduleRadio && scheduleTime) {
-        // Show/hide schedule time based on selection
         asapRadio.addEventListener('change', function() {
             if (this.checked) {
                 scheduleTime.style.display = 'none';
@@ -873,98 +1044,40 @@ function setupDeliveryTime() {
             }
         });
         
-        // Set default to ASAP
         asapRadio.checked = true;
         scheduleTime.style.display = 'none';
     }
 }
 
-// ===== LOGIN FUNCTIONS =====
 function handleLogin(event) {
     event.preventDefault();
-    isLoggedIn = true;
-
-    // Store login success flag in localStorage
+    userLoggedIn = true;
     localStorage.setItem('loginSuccess', 'true');
-
-    // Redirect to home page
     window.location.href = 'home.html';
 }
 
-// ===== ORDER TRACKING =====
-// ===== ORDER TRACKING =====
-function simulateOrderProgress() {
-    const steps = ['confirmed', 'preparing', 'cooking', 'ready', 'delivered'];
+// ===== ORDER TRACKING FUNCTIONS =====
+function loadOrderFromStorage() {
+    let savedOrder = localStorage.getItem('tarkaCurrentOrder');
     
-    // Get current position in the steps
-    let currentIndex = steps.indexOf(currentOrder.status);
-    
-    // If order is already delivered, don't start simulation
-    if (currentIndex === steps.length - 1) {
-        updateTrackingDisplay();
-        return;
+    if (savedOrder) {
+        try {
+            currentOrder = JSON.parse(savedOrder);
+            console.log('✅ Loaded order from localStorage:', currentOrder.orderId);
+        } catch (error) {
+            console.error('❌ Error parsing order:', error);
+            currentOrder = null;
+        }
+    } else {
+        currentOrder = null;
     }
-
-    const interval = setInterval(() => {
-        if (!currentOrder) {
-            clearInterval(interval);
-            updateTrackingDisplay(); // Show appropriate state
-            return;
-        }
-        
-        if (currentIndex < steps.length - 1) {
-            currentIndex++;
-            currentOrder.status = steps[currentIndex];
-            saveOrderToStorage();
-            updateTrackingDisplay();
-            
-            // If order is delivered, stop the simulation
-            if (currentOrder.status === 'delivered') {
-                clearInterval(interval);
-                // Save delivered status to a separate flag
-                localStorage.setItem('tarkaLastOrderDelivered', 'true');
-                
-                // Keep order in storage for a while so user can see it's delivered
-                setTimeout(() => {
-                    localStorage.removeItem('tarkaCurrentOrder');
-                    currentOrder = null;
-                    updateTrackingDisplay(); // Update to show delivered state
-                }, 10000); // Remove after 10 seconds
-            }
-        } else {
-            clearInterval(interval);
-        }
-    }, 5000); // Change every 5 seconds
-
-    updateTrackingDisplay();
 }
 
 function updateTrackingDisplay() {
     const trackingContent = document.getElementById('tracking-content');
     if (!trackingContent) return;
 
-    // Check if we just had a delivered order
-    const lastOrderDelivered = localStorage.getItem('tarkaLastOrderDelivered') === 'true';
-
-    if (!currentOrder && lastOrderDelivered) {
-        // STATE 2: Order was recently delivered - show special delivered message
-        trackingContent.innerHTML = `
-            <div style="text-align: center; padding: 4rem 2rem; color: var(--text-dark);">
-                <div style="font-size: 4rem; margin-bottom: 1rem;">🎉</div>
-                <h3 style="color: var(--text-dark); margin-bottom: 1rem; font-size: 1.8rem;">Order Delivered Successfully!</h3>
-                <p style="color: var(--text-light); font-size: 1.1rem; margin-bottom: 1rem;">
-                    Thank you for your order! We hope you enjoyed your meal. 🍽
-                </p>
-                <p style="color: var(--text-light); font-size: 1.1rem; margin-bottom: 2rem;">
-                    Ready for another delicious experience? <a href="menu.html" style="color: var(--primary-orange); text-decoration: none; font-weight: 600;">Place a new order from our menu</a>
-                </p>
-            </div>
-        `;
-        return;
-    }
-
     if (!currentOrder) {
-        // STATE 1: No orders ever placed - show initial empty state
         trackingContent.innerHTML = `
             <div style="text-align: center; padding: 4rem 2rem; color: var(--text-dark);">
                 <div style="font-size: 4rem; margin-bottom: 1rem;">📦</div>
@@ -977,7 +1090,28 @@ function updateTrackingDisplay() {
         return;
     }
 
-    // STATE 3: Active order - show tracking progress
+    if (currentOrder.status === 'delivered') {
+        trackingContent.innerHTML = `
+            <div style="text-align: center; padding: 4rem 2rem; color: var(--text-dark);">
+                <div style="font-size: 4rem; margin-bottom: 1rem;">🎉</div>
+                <h3 style="color: var(--text-dark); margin-bottom: 1rem; font-size: 1.8rem;">Order Delivered Successfully!</h3>
+                <p style="color: var(--text-light); font-size: 1.1rem; margin-bottom: 1rem;">
+                    Thank you for your order! We hope you enjoyed your meal. 🍽
+                </p>
+                <p style="color: var(--text-light); font-size: 1.1rem; margin-bottom: 2rem;">
+                    Ready for another delicious experience? <a href="menu.html" style="color: var(--primary-orange); text-decoration: none; font-weight: 600;">Place a new order from our menu</a>
+                </p>
+            </div>
+        `;
+        
+        localStorage.removeItem('tarkaCurrentOrder');
+        localStorage.removeItem('tarkaLastOrderDelivered');
+        currentOrder = null;
+        
+        console.log('✅ Order delivered and cleared from localStorage');
+        return;
+    }
+
     const steps = [
         { id: 'confirmed', label: 'Order Confirmed', icon: '✅', time: '1:15:28' },
         { id: 'preparing', label: 'Preparing', icon: '👨‍🍳', time: '1:18:17' },
@@ -986,13 +1120,14 @@ function updateTrackingDisplay() {
         { id: 'delivered', label: 'Delivered', icon: '🚚', time: '1:25:30' }
     ];
 
-    // Calculate progress percentage for the progress bar
     const progressPercent = ((steps.findIndex(step => step.id === currentOrder.status) + 1) / steps.length) * 100;
-   const orderIdDisplay = `#TKA${currentOrder.id}`;
+    
+    const orderIdDisplay = getDisplayOrderId(currentOrder);
+    
     trackingContent.innerHTML = `
         <div style="background: rgba(255, 255, 255, 0.95); border-radius: 15px; padding: 2rem; margin-bottom: 2rem; box-shadow: 0 8px 32px rgba(0,0,0,0.1);">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
-                <h3 style="color: var(--text-dark); margin: 0;">Order #${orderIdDisplay}</h3>
+                <h3 style="color: var(--text-dark); margin: 0;">Order ${orderIdDisplay}</h3>
                 <div style="text-align: right;">
                     <p style="color: var(--text-light); margin: 0; font-size: 0.9rem;">Placed</p>
                     <p style="color: var(--text-dark); margin: 0; font-weight: 600;">${currentOrder.timestamp ? new Date(currentOrder.timestamp).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) : '1:15:28'}</p>
@@ -1017,12 +1152,10 @@ function updateTrackingDisplay() {
             `).join('')}
         </div>
 
-        <!-- Progress Bar -->
         <div class="progress-bar" style="margin: 2rem auto;">
             <div class="progress" style="width: ${progressPercent}%;"></div>
         </div>
 
-        <!-- ETA Section -->
         <div class="tracking-status" style="text-align: center; margin-top: 2rem;">
             <p style="color: var(--text-dark); margin-bottom: 0.5rem; font-size: 1.1rem;">
                 ⏱ Estimated Delivery: <strong style="color: var(--primary-orange);">${getEstimatedDeliveryTime()}</strong>
@@ -1034,46 +1167,42 @@ function updateTrackingDisplay() {
     `;
 }
 
-function getStepClass(stepId) {
-    if (!currentOrder) return '';
+function simulateOrderProgress() {
+    if (currentOrder && currentOrder.status === 'delivered') {
+        updateTrackingDisplay();
+        return;
+    }
     
     const steps = ['confirmed', 'preparing', 'cooking', 'ready', 'delivered'];
-    const currentIndex = steps.indexOf(currentOrder.status);
-    const stepIndex = steps.indexOf(stepId);
+    let currentIndex = steps.indexOf(currentOrder.status);
     
-    if (stepIndex < currentIndex) return 'completed';
-    if (stepIndex === currentIndex) return 'active';
-    return '';
+    if (currentIndex === steps.length - 1) {
+        updateTrackingDisplay();
+        return;
+    }
+
+    const interval = setInterval(() => {
+        if (!currentOrder) {
+            clearInterval(interval);
+            return;
+        }
+        
+        if (currentIndex < steps.length - 1) {
+            currentIndex++;
+            currentOrder.status = steps[currentIndex];
+            saveOrderToStorage();
+            updateTrackingDisplay();
+            
+            if (currentOrder.status === 'delivered') {
+                clearInterval(interval);
+                localStorage.setItem('tarkaLastOrderDelivered', 'true');
+                updateTrackingDisplay();
+            }
+        } else {
+            clearInterval(interval);
+        }
+    }, 5000);
 }
-
-function getEstimatedDeliveryTime() {
-    if (!currentOrder) return '25-35 minutes';
-    
-    const statusTimes = {
-        'confirmed': '25-35 minutes',
-        'preparing': '20-30 minutes', 
-        'cooking': '15-25 minutes',
-        'ready': '10-15 minutes',
-        'delivered': 'Delivered'
-    };
-    
-    return statusTimes[currentOrder.status] || '25-35 minutes';
-}
-
-function getStatusMessage(status) {
-    const messages = {
-        'confirmed': 'Your order has been confirmed and will be prepared shortly!',
-        'preparing': 'Our chefs are gathering fresh ingredients for your meal!',
-        'cooking': 'Your food is being cooked to perfection!',
-        'ready': 'Your order is ready and will be delivered soon!',
-        'delivered': 'Enjoy your meal! Thank you for choosing TARKA! 🎉'
-    };
-    
-    return messages[status] || 'Your order is being processed with care!';
-}
-
-
-
 
 // ===== UTILITY FUNCTIONS =====
 function showNotification(message) {
@@ -1103,92 +1232,252 @@ function showSignup() {
     showNotification('Signup feature coming soon!');
 }
 
-// ===== LOCAL STORAGE FUNCTIONS =====
 function saveOrderToStorage() {
     localStorage.setItem('tarkaCurrentOrder', JSON.stringify(currentOrder));
 }
 
-function loadOrderFromStorage() {
-    const savedOrder = localStorage.getItem('tarkaCurrentOrder');
-    if (savedOrder) {
-        currentOrder = JSON.parse(savedOrder);
-    }
-}
-
-// ===== URL PARAMETER HANDLING =====
 function getUrlParameter(name) {
     const urlParams = new URLSearchParams(window.location.search);
     return urlParams.get(name);
 }
 
+function calculateSubtotal() {
+    return cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+}
+
+function calculateDiscount() {
+    if (!appliedPromo) return 0;
+    
+    const subtotal = calculateSubtotal();
+    if (appliedPromo.type === 'percentage') {
+        return Math.round(subtotal * (appliedPromo.discount / 100));
+    } else {
+        return appliedPromo.discount;
+    }
+}
+
+function calculateTotal() {
+    const subtotal = calculateSubtotal();
+    const discount = calculateDiscount();
+    const deliveryFee = subtotal > 0 ? 150 : 0;
+    const discountedSubtotal = Math.max(0, subtotal - discount);
+    const tax = Math.round(discountedSubtotal * 0.05);
+    return discountedSubtotal + deliveryFee + tax;
+}
+
+function getStepClass(stepId) {
+    if (!currentOrder) return '';
+    const steps = ['confirmed', 'preparing', 'cooking', 'ready', 'delivered'];
+    const currentStepIndex = steps.indexOf(currentOrder.status);
+    const stepIndex = steps.indexOf(stepId);
+    
+    if (stepIndex < currentStepIndex) return 'completed';
+    if (stepIndex === currentStepIndex) return 'active';
+    return '';
+}
+
+function getEstimatedDeliveryTime() {
+    if (!currentOrder) return '30-40 minutes';
+    
+    const times = {
+        'confirmed': '30-40 minutes',
+        'preparing': '25-35 minutes',
+        'cooking': '20-30 minutes',
+        'ready': '10-20 minutes',
+        'delivered': 'Delivered'
+    };
+    
+    return times[currentOrder.status] || '30-40 minutes';
+}
+
+function getStatusMessage(status) {
+    const messages = {
+        'confirmed': 'Your order has been confirmed and will be prepared shortly.',
+        'preparing': 'Our chefs are preparing your delicious meal with care.',
+        'cooking': 'Your food is being cooked to perfection.',
+        'ready': 'Your order is ready and will be dispatched soon.',
+        'delivered': 'Enjoy your meal! Thank you for choosing TARKA.'
+    };
+    
+    return messages[status] || 'Your order is being processed.';
+}
+
+// ===== COMBO ADD TO CART =====
+function setupComboButtons() {
+    const comboButtons = document.querySelectorAll(".combo-btn");
+    
+    comboButtons.forEach(button => {
+        button.addEventListener("click", () => {
+            const comboCard = button.closest(".special-combo");
+            if (!comboCard) return;
+
+            const name = comboCard.querySelector("h4").innerText.trim();
+            const price = parseInt(
+                comboCard.querySelector(".discounted-price")
+                    .innerText.replace(/\D/g, "")
+            );
+            const image = comboCard.querySelector(".combo-image img").src;
+
+            const comboId = "combo-" + name.replace(/\s+/g, "-").toLowerCase();
+
+            const existingItem = cart.find(item => item.id === comboId);
+
+            if (existingItem) {
+                existingItem.quantity++;
+            } else {
+                cart.push({
+                    id: comboId,
+                    name,
+                    price,
+                    image,
+                    quantity: 1,
+                    category: "combo"
+                });
+            }
+
+            saveCartToStorage();
+            updateCartCount();
+            updateCartDisplay();
+
+            showNotification(`${name} added to cart`);
+        });
+    });
+}
+
+// ===== CONTRAST TOGGLE =====
+function setupContrastToggle() {
+    const contrastBtn = document.getElementById('contrastBtn');
+    if (contrastBtn) {
+        contrastBtn.addEventListener('click', function() {
+            document.body.classList.toggle('high-contrast');
+            const isHighContrast = document.body.classList.contains('high-contrast');
+            localStorage.setItem('highContrast', isHighContrast);
+        });
+    }
+}
+
+// ===== DEBUG ORDER IDS =====
+function debugOrderIds() {
+    console.log('=== ORDER ID DEBUG ===');
+    console.log('1. Generated Order ID from function:', generateOrderId());
+    
+    const orders = JSON.parse(localStorage.getItem('tarkaOrders') || '[]');
+    console.log('2. Orders in localStorage:', orders.length);
+    
+    orders.forEach((order, index) => {
+        console.log(`Order ${index + 1}:`, {
+            orderId: order.orderId,
+            id: order.id,
+            total: order.total,
+            date: order.timestamp || order.date
+        });
+    });
+    
+    const currentOrder = JSON.parse(localStorage.getItem('tarkaCurrentOrder') || '{}');
+    console.log('3. Current tracking order:', {
+        orderId: currentOrder.orderId,
+        id: currentOrder.id
+    });
+    
+    console.log('=== END DEBUG ===');
+}
+
 // ===== PAGE INITIALIZATION =====
 document.addEventListener('DOMContentLoaded', function() {
-    // Load cart from storage
+    convertExistingOrdersToTKA();
+    loadFavoritesFromStorage();
     loadCartFromStorage();
-    
-    // Load order from storage
     loadOrderFromStorage();
     
-    // Check for login success
     if (localStorage.getItem('loginSuccess') === 'true') {
         showNotification('Login successful!');
         localStorage.removeItem('loginSuccess');
     }
     
-    // Initialize page-specific content
     const currentPage = window.location.pathname.split('/').pop();
     
     switch(currentPage) {
         case 'menu.html':
+            loadFavoritesFromStorage();
             const category = getUrlParameter('category');
             loadMenu(category);
+            
+            const urlParams = new URLSearchParams(window.location.search);
+            const itemIdFromUrl = urlParams.get('itemId');
+            if (itemIdFromUrl) {
+                setTimeout(() => {
+                    openItemDetail(parseInt(itemIdFromUrl));
+                }, 500);
+            }
+            break;
+            
+        case 'favourites.html':
+            loadFavoritesFromStorage();
+            displayFavorites();
             break;
             
         case 'cart.html':
             updateCartDisplay();
             break;
-            case 'checkout.html':
-    // Load checkout state if available
-    const savedCheckoutState = localStorage.getItem('tarkaCheckoutState');
-    if (savedCheckoutState) {
-        const checkoutState = JSON.parse(savedCheckoutState);
-        cart = checkoutState.cart;
-        appliedPromo = checkoutState.appliedPromo;
-    }
-    updateCheckoutDisplay();
-    setupDeliveryTime();
-    break;
-    case 'tracking.html':
-    // Clear the delivered flag when page loads fresh (not from order flow)
-    if (!currentOrder && localStorage.getItem('tarkaLastOrderDelivered')) {
-        localStorage.removeItem('tarkaLastOrderDelivered');
-    }
-    updateTrackingDisplay();
-    if (currentOrder && currentOrder.status !== 'delivered') {
-        // Auto-resume simulation for active orders
-        simulateOrderProgress();
-    }
-    break;
-        
-       
-    case 'confirmation.html':
-    displayOrderConfirmation();
-    if (currentOrder && currentOrder.status !== 'delivered') {
-        // Start tracking simulation after a brief delay
-        setTimeout(() => {
-            simulateOrderProgress();
-        }, 2000);
-    }
-    break;
             
+        case 'checkout.html':
+            const savedCheckoutState = localStorage.getItem('tarkaCheckoutState');
+            if (savedCheckoutState) {
+                const checkoutState = JSON.parse(savedCheckoutState);
+                cart = checkoutState.cart;
+                appliedPromo = checkoutState.appliedPromo;
+            }
+            updateCheckoutDisplay();
+            setupDeliveryTime();
+            
+            setTimeout(() => {
+                autoFillUserInfo();
+            }, 100);
+            break;
+            
+        case 'tracking.html':
+            console.log('=== TRACKING PAGE LOADED ===');
+            
+            loadOrderFromStorage();
+            
+            console.log('Current order loaded:', currentOrder);
+            console.log('tarkaCurrentOrder in storage:', localStorage.getItem('tarkaCurrentOrder'));
+            
+            if (!currentOrder && localStorage.getItem('tarkaLastOrderDelivered')) {
+                localStorage.removeItem('tarkaLastOrderDelivered');
+            }
+            
+            updateTrackingDisplay();
+            
+            if (currentOrder && currentOrder.status !== 'delivered') {
+                console.log('Starting order tracking simulation');
+                simulateOrderProgress();
+            }
+            break;
+        
+        case 'confirmation.html':
+            displayOrderConfirmation();
+            if (currentOrder && currentOrder.status !== 'delivered') {
+                setTimeout(() => {
+                    simulateOrderProgress();
+                }, 2000);
+            }
+            break;
             
         default:
-            // Home page or other pages
+            loadFavoritesFromStorage();
             loadMenu();
+            setupComboButtons();
             break;
     }
     
-    // Initialize category ratings
+    setupContrastToggle();
+    
+    const isHighContrast = localStorage.getItem('highContrast') === 'true';
+    if (isHighContrast) {
+        document.body.classList.add('high-contrast');
+    }
+    
     document.querySelectorAll('.category-card').forEach(card => {
         const ratingValue = parseFloat(card.getAttribute('data-rating')) || 0;
         const ratingContainer = card.querySelector('.rating');
@@ -1211,4 +1500,880 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         }
     });
+    
+    const focusable = Array.from(document.querySelectorAll('input, select, textarea, button, a'));
+    if (focusable.length === 0) return;
+
+    let index = 0;
+    if (focusable.length > 0) focusable[index].focus();
+
+    document.addEventListener('keydown', (e) => {
+        switch(e.key) {
+            case 'ArrowDown':
+                e.preventDefault();
+                index = (index + 1) % focusable.length;
+                focusable[index].focus();
+                break;
+
+            case 'ArrowUp':
+                e.preventDefault();
+                index = (index - 1 + focusable.length) % focusable.length;
+                focusable[index].focus();
+                break;
+
+            case 'Enter':
+                if(document.activeElement.tagName === 'BUTTON' || document.activeElement.tagName === 'A') {
+                    document.activeElement.click();
+                }
+                break;
+
+            case 'Escape':
+                window.history.back();
+                break;
+        }
+    });
+});
+// ===== DATABASE CART FUNCTIONS =====
+
+async function syncCartToDatabase() {
+    try {
+        const userId = localStorage.getItem('userId');
+        if (!userId) {
+            console.log('⚠️ No userId found for cart sync');
+            return false;
+        }
+
+        // Get cart from localStorage
+        const cartItems = JSON.parse(localStorage.getItem('tarkaCart') || '[]');
+        
+        if (cartItems.length === 0) {
+            // If cart is empty, clear it from database
+            try {
+                await fetch(`http://localhost:3000/api/cart/clear/${userId}`, {
+                    method: 'DELETE'
+                });
+                console.log('✅ Cleared empty cart from database');
+            } catch (error) {
+                console.log('⚠️ Could not clear empty cart from database');
+            }
+            return true;
+        }
+
+        // Transform cart items to database format
+        const dbCartItems = cartItems.map(item => ({
+            product_id: item.id.toString(),
+            name: item.name,
+            price: item.price,
+            quantity: item.quantity,
+            image: item.image || '',
+            total: item.price * item.quantity
+        }));
+
+        // Send entire cart to database
+        const response = await fetch(`http://localhost:3000/api/cart/sync/${userId}`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ items: dbCartItems })
+        });
+
+        if (response.ok) {
+            console.log('✅ Cart synced to database');
+            return true;
+        } else {
+            console.error('❌ Cart sync failed:', await response.text());
+            return false;
+        }
+        
+    } catch (error) {
+        console.error('❌ Error syncing cart to database:', error);
+        return false;
+    }
+}
+
+// Add this endpoint to your server.js if it doesn't exist
+/*
+app.post("/api/cart/sync/:userId", async (req, res) => {
+    try {
+        const userId = req.params.userId;
+        const { items } = req.body;
+
+        // Find or create cart
+        let cart = await Cart.findOne({ user_id: userId });
+        
+        if (!cart) {
+            cart = new Cart({
+                user_id: userId,
+                items: items
+            });
+        } else {
+            cart.items = items;
+            cart.updated_at = new Date();
+        }
+
+        await cart.save();
+        res.json({ success: true, cart });
+        
+    } catch (err) {
+        console.error("Cart sync error:", err);
+        res.status(500).json({ success: false, message: "Failed to sync cart" });
+    }
+});
+*/
+
+// ===== UPDATED: addToCart with proper database saving =====
+async function addToCart(itemId) {
+    const item = menuItems.find(i => i.id === itemId);
+    if (!item) return alert("Item not found!");
+
+    const userId = localStorage.getItem('userId'); 
+    if (!userId) {
+        alert("Please log in to add items to your cart.");
+        window.location.href = 'login.html';
+        return;
+    }
+
+    // First update local cart
+    const existingItem = cart.find(i => i.id === itemId);
+    if (existingItem) {
+        existingItem.quantity += 1;
+    } else {
+        cart.push({ 
+            ...item, 
+            quantity: 1,
+            product_id: item.id.toString() 
+        });
+    }
+    
+    saveCartToStorage();
+    updateCartCount();
+    updateCartDisplay();
+
+    // Prepare payload for database
+    const payload = {
+        user_id: userId,
+        item: {
+            product_id: item.id.toString(),
+            name: item.name,
+            price: item.price,
+            quantity: 1,
+            image: item.image,
+            total: item.price
+        }
+    };
+    
+    try {
+        const response = await fetch("http://localhost:3000/api/cart/add", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(payload)
+        });
+
+        const result = await response.json();
+
+        if (response.ok && result.success) {
+            console.log('✅ Item added to database cart');
+        } else {
+            console.warn('⚠️ Database cart update failed, but item added locally');
+        }
+    } catch (err) {
+        console.error('❌ Database error:', err);
+        // Item already added to local cart, continue
+    }
+    
+    showNotification(`${item.name} added to cart!`);
+}
+
+// ===== UPDATED: removeFromCart with database sync =====
+async function removeFromCart(itemId) {
+    const userId = localStorage.getItem('userId');
+    
+    // Remove from local cart first
+    cart = cart.filter(item => item.id !== itemId);
+    updateCartCount();
+    saveCartToStorage();
+    updateCartDisplay();
+    
+    // Remove from database if user is logged in
+    if (userId) {
+        try {
+            const response = await fetch("http://localhost:3000/api/cart/remove", {
+                method: "DELETE",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    user_id: userId,
+                    product_id: itemId.toString()
+                })
+            });
+            
+            if (response.ok) {
+                console.log('✅ Item removed from database cart');
+            }
+        } catch (error) {
+            console.error('❌ Error removing from database cart:', error);
+        }
+    }
+    
+    showNotification('Item removed from cart');
+}
+
+// ===== UPDATED: updateQuantity with database sync =====
+async function updateQuantity(itemId, change) {
+    const item = cart.find(i => i.id === itemId);
+    if (item) {
+        item.quantity += change;
+        if (item.quantity <= 0) {
+            await removeFromCart(itemId);
+        } else {
+            updateCartCount();
+            saveCartToStorage();
+            updateCartDisplay();
+            
+            // Update in database
+            const userId = localStorage.getItem('userId');
+            if (userId) {
+                try {
+                    // First remove, then add with new quantity
+                    await fetch("http://localhost:3000/api/cart/remove", {
+                        method: "DELETE",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({
+                            user_id: userId,
+                            product_id: itemId.toString()
+                        })
+                    });
+                    
+                    const payload = {
+                        user_id: userId,
+                        item: {
+                            product_id: item.id.toString(),
+                            name: item.name,
+                            price: item.price,
+                            quantity: item.quantity,
+                            image: item.image,
+                            total: item.price * item.quantity
+                        }
+                    };
+                    
+                    await fetch("http://localhost:3000/api/cart/add", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify(payload)
+                    });
+                    
+                } catch (error) {
+                    console.error('❌ Error updating quantity in database:', error);
+                }
+            }
+        }
+    }
+}
+
+// ===== UPDATED: loadCartFromStorage with database priority =====
+async function loadCartFromStorage() {
+    try {
+        const userId = localStorage.getItem('userId');
+        
+        // Always try to load from database first if user is logged in
+        if (userId) {
+            try {
+                console.log('🔄 Loading cart from database for user:', userId);
+                const response = await fetch(`http://localhost:3000/api/cart/${userId}`);
+                
+                if (response.ok) {
+                    const result = await response.json();
+                    
+                    if (result.success && result.cart && result.cart.items) {
+                        // Transform database cart items to local format
+                        cart = result.cart.items.map(cartItem => ({
+                            id: parseInt(cartItem.product_id),
+                            name: cartItem.name,
+                            price: cartItem.price,
+                            quantity: cartItem.quantity,
+                            image: cartItem.image,
+                            category: menuItems.find(m => m.id === parseInt(cartItem.product_id))?.category || 'unknown'
+                        }));
+                        
+                        console.log('✅ Cart loaded from database:', cart.length, 'items');
+                        
+                        // Save to localStorage as backup
+                        saveCartToStorage();
+                        updateCartCount();
+                        return;
+                    }
+                }
+            } catch (dbError) {
+                console.log('⚠️ Database cart load failed, using localStorage:', dbError);
+            }
+        }
+        
+        // Fallback to localStorage
+        const savedCart = localStorage.getItem('tarkaCart');
+        if (savedCart) {
+            cart = JSON.parse(savedCart);
+            updateCartCount();
+            console.log('📦 Cart loaded from localStorage:', cart.length, 'items');
+        }
+        
+    } catch (error) {
+        console.error('❌ Error loading cart:', error);
+        cart = [];
+    }
+}
+
+// ===== UPDATED: Enhanced handleCheckout for database saving =====
+async function handleCheckout(event) {
+    event.preventDefault();
+    
+    console.log('🚀 CHECKOUT STARTED - Database Integration');
+    
+    // Disable button to prevent double submission
+    const submitBtn = event.target.querySelector('.checkout-btn');
+    if (submitBtn) {
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
+    }
+    
+    // ===== 1. GET FORM VALUES =====
+    const fullName = document.getElementById('fullName')?.value.trim() || '';
+    const phone = document.getElementById('phone')?.value.trim() || '';
+    const address = document.getElementById('address')?.value.trim() || '';
+    const deliveryTime = document.querySelector('input[name="deliveryTime"]:checked')?.value || 'asap';
+    const paymentMethod = document.querySelector('input[name="payment"]:checked')?.value || 'cash';
+    const instructions = document.getElementById('delivery-instructions')?.value.trim() || '';
+    
+    // ===== 2. VALIDATE FORM =====
+    if (!fullName || !phone || !address) {
+        alert('Please fill in all required fields!');
+        if (submitBtn) {
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = 'Place Order';
+        }
+        return;
+    }
+    
+    if (!/^\d{11}$/.test(phone)) {
+        alert('Please enter a valid 11-digit phone number!');
+        if (submitBtn) {
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = 'Place Order';
+        }
+        return;
+    }
+    
+    // ===== 3. GET USER INFO =====
+    const user_id = localStorage.getItem('userId');
+    const userEmail = localStorage.getItem('userEmail');
+    
+    if (!user_id || !userEmail) {
+        alert('You must be logged in to place an order!');
+        window.location.href = 'login.html';
+        return;
+    }
+    
+    if (cart.length === 0) {
+        alert('Your cart is empty!');
+        if (submitBtn) {
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = 'Place Order';
+        }
+        return;
+    }
+    
+    // ===== 4. CALCULATE TOTALS =====
+    const subtotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+    const deliveryFee = subtotal > 0 ? 150 : 0;
+    const tax = Math.round(subtotal * 0.05);
+    const total_amount = subtotal + deliveryFee + tax;
+    
+    // ===== 5. GENERATE ORDER ID =====
+    function generateOrderId() {
+        const randomNumber = Math.floor(Math.random() * 90000) + 10000;
+        return `#TKA${randomNumber}`;
+    }
+    
+    const orderId = generateOrderId();
+    const estimatedTime = deliveryTime === 'asap' ? '25-35 minutes' : '35-45 minutes';
+    
+    // ===== 6. PREPARE ORDER ITEMS FOR DATABASE =====
+    const orderItems = cart.map(item => ({
+        name: item.name,
+        price: item.price,
+        quantity: item.quantity,
+        total: item.price * item.quantity
+    }));
+    
+    // ===== 7. SAVE TO DATABASE VIA /api/checkout =====
+    console.log('📤 Saving order to database via /api/checkout');
+    
+    const orderData = {
+        user_id: user_id,
+        user_email: userEmail,
+        items: orderItems,
+        total_amount: total_amount,
+        delivery_address: address,
+        delivery_time: deliveryTime,
+        payment_method: paymentMethod,
+        notes: instructions,
+        customer_name: fullName,
+        phone: phone
+    };
+    
+    console.log('📦 Order data for database:', orderData);
+    
+    try {
+        const checkoutResponse = await fetch('http://localhost:3000/api/checkout', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(orderData)
+        });
+        
+        const checkoutResult = await checkoutResponse.json();
+        console.log('📥 Checkout API response:', checkoutResult);
+        
+        if (!checkoutResponse.ok || !checkoutResult.success) {
+            console.warn('⚠️ /api/checkout failed, trying /api/orders');
+            
+            // Try alternative endpoint
+            const orderResponse = await fetch('http://localhost:3000/api/orders', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    ...orderData,
+                    user_name: fullName
+                })
+            });
+            
+            const orderResult = await orderResponse.json();
+            console.log('📥 Orders API response:', orderResult);
+            
+            if (!orderResponse.ok || !orderResult.success) {
+                throw new Error('Both order endpoints failed');
+            }
+        }
+        
+        console.log('✅ Order saved to database successfully');
+        
+    } catch (error) {
+        console.error('❌ Database save error:', error);
+        // Continue anyway - we'll save to localStorage
+    }
+    
+    // ===== 8. SAVE TO LOCALSTORAGE FOR TRACKING =====
+    const trackingOrderData = {
+        orderId: orderId,
+        id: orderId,
+        email: userEmail,
+        items: JSON.parse(JSON.stringify(cart)),
+        total: parseFloat(total_amount.toFixed(2)),
+        subtotal: parseFloat(subtotal.toFixed(2)),
+        deliveryFee: parseFloat(deliveryFee.toFixed(2)),
+        tax: parseFloat(tax.toFixed(2)),
+        fullName: fullName,
+        phone: phone,
+        address: address,
+        deliveryTime: deliveryTime,
+        estimatedDelivery: estimatedTime,
+        paymentMethod: paymentMethod,
+        instructions: instructions || '',
+        status: 'confirmed',
+        timestamp: new Date().toISOString(),
+        appliedPromo: appliedPromo
+    };
+    
+    // Save for tracking
+    localStorage.setItem('tarkaCurrentOrder', JSON.stringify(trackingOrderData));
+    localStorage.setItem('tarkaOrderDetails', JSON.stringify(trackingOrderData));
+    
+    // Save to orders history
+    let orders = JSON.parse(localStorage.getItem('tarkaOrders') || '[]');
+    orders.push(trackingOrderData);
+    localStorage.setItem('tarkaOrders', JSON.stringify(orders));
+    
+    console.log('💾 Order saved to localStorage for tracking');
+    
+    // ===== 9. SAVE PROFILE INFO =====
+    if (document.getElementById('save-address')?.checked) {
+        const savedProfile = JSON.parse(localStorage.getItem('tarkaProfile') || '{}');
+        savedProfile[userEmail] = {
+            ...(savedProfile[userEmail] || {}),
+            name: fullName,
+            phone: phone,
+            address: address,
+            lastUpdated: new Date().toISOString()
+        };
+        localStorage.setItem('tarkaProfile', JSON.stringify(savedProfile));
+        
+        // Also update database profile
+        try {
+            await fetch(`http://localhost:3000/api/user/${user_id}/profile`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    name: fullName,
+                    phone: phone,
+                    address: address
+                })
+            });
+            console.log('✅ Profile updated in database');
+        } catch (error) {
+            console.error('❌ Error updating profile in database:', error);
+        }
+    }
+    
+    // ===== 10. CLEAR CART FROM DATABASE AND LOCALSTORAGE =====
+    try {
+        // Clear from database
+        await fetch(`http://localhost:3000/api/cart/clear/${user_id}`, {
+            method: 'DELETE'
+        });
+        console.log('✅ Cart cleared from database');
+    } catch (error) {
+        console.error('❌ Error clearing cart from database:', error);
+    }
+    
+    // Clear from localStorage
+    cart = [];
+    appliedPromo = null;
+    saveCartToStorage();
+    updateCartCount();
+    updateCartDisplay();
+    
+    console.log('🛒 Cart cleared from localStorage');
+    
+    // ===== 11. REDIRECT TO CONFIRMATION =====
+    console.log('🎉 Checkout completed! Redirecting to confirmation...');
+    
+    setTimeout(() => {
+        window.location.href = 'confirmation.html';
+    }, 500);
+}
+
+// ===== ADD THIS FUNCTION TO YOUR server.js =====
+/*
+// Add this endpoint to server.js for cart sync
+app.post("/api/cart/sync/:userId", async (req, res) => {
+    try {
+        const userId = req.params.userId;
+        const { items } = req.body;
+
+        if (!userId) {
+            return res.status(400).json({ success: false, message: "User ID required" });
+        }
+
+        // Validate user exists
+        const user = await User.findById(userId);
+        if (!user) {
+            return res.status(404).json({ success: false, message: "User not found" });
+        }
+
+        let cart = await Cart.findOne({ user_id: userId });
+        
+        if (!cart) {
+            cart = new Cart({
+                user_id: userId,
+                items: items || []
+            });
+        } else {
+            cart.items = items || [];
+            cart.updated_at = new Date();
+        }
+
+        await cart.save();
+        res.json({ success: true, cart: cart });
+        
+    } catch (err) {
+        console.error("Cart sync error:", err);
+        res.status(500).json({ success: false, message: "Failed to sync cart", error: err.message });
+    }
+});
+*/
+// ===== ADD THESE ENDPOINTS TO YOUR server.js =====
+
+// --- SYNC CART ENDPOINT ---
+app.post("/api/cart/sync/:userId", async (req, res) => {
+    try {
+        const userId = req.params.userId;
+        const { items } = req.body;
+
+        if (!userId) {
+            return res.status(400).json({ success: false, message: "User ID required" });
+        }
+
+        // Validate user exists
+        const user = await User.findById(userId);
+        if (!user) {
+            return res.status(404).json({ success: false, message: "User not found" });
+        }
+
+        let cart = await Cart.findOne({ user_id: userId });
+        
+        if (!cart) {
+            cart = new Cart({
+                user_id: userId,
+                items: items || []
+            });
+        } else {
+            cart.items = items || [];
+            cart.updated_at = new Date();
+        }
+
+        await cart.save();
+        res.json({ success: true, cart: cart });
+        
+    } catch (err) {
+        console.error("Cart sync error:", err);
+        res.status(500).json({ success: false, message: "Failed to sync cart", error: err.message });
+    }
+});
+
+// --- TEST ENDPOINT FOR DEBUGGING ---
+app.get("/api/test-db", async (req, res) => {
+    try {
+        const users = await User.countDocuments();
+        const carts = await Cart.countDocuments();
+        const orders = await Order.countDocuments();
+        const profiles = await UserProfile.countDocuments();
+        
+        res.json({
+            success: true,
+            database: mongoose.connection.name,
+            collections: {
+                users: users,
+                carts: carts,
+                orders: orders,
+                profiles: profiles
+            },
+            message: "Database connection successful"
+        });
+    } catch (err) {
+        res.json({
+            success: false,
+            error: err.message,
+            message: "Database connection failed"
+        });
+    }
+});
+
+// --- DEBUG: GET ALL CARTS ---
+app.get("/api/debug/carts", async (req, res) => {
+    try {
+        const carts = await Cart.find({}).populate('user_id', 'email');
+        
+        const formattedCarts = carts.map(cart => ({
+            cart_id: cart._id,
+            user_id: cart.user_id,
+            user_email: cart.user_id?.email || 'Unknown',
+            items_count: cart.items.length,
+            items: cart.items.map(item => ({
+                product_id: item.product_id,
+                name: item.name,
+                quantity: item.quantity,
+                price: item.price
+            })),
+            updated_at: cart.updated_at
+        }));
+        
+        res.json({
+            success: true,
+            total_carts: carts.length,
+            carts: formattedCarts
+        });
+    } catch (err) {
+        res.status(500).json({ success: false, message: "Failed to fetch carts", error: err.message });
+    }
+});
+
+// --- DEBUG: GET ALL ORDERS ---
+app.get("/api/debug/orders", async (req, res) => {
+    try {
+        const orders = await Order.find({}).sort({ created_at: -1 }).limit(50);
+        
+        res.json({
+            success: true,
+            total_orders: await Order.countDocuments(),
+            recent_orders: orders.map(order => ({
+                _id: order._id,
+                order_id: order._id.toString().slice(-6), // Short ID for display
+                user_id: order.user_id,
+                user_email: order.user_email,
+                user_name: order.user_name || "Not set",
+                items_count: order.items.length,
+                total_amount: order.total_amount,
+                status: order.status,
+                created_at: order.created_at,
+                delivery_address: order.delivery_address
+            }))
+        });
+    } catch (err) {
+        res.status(500).json({ success: false, message: "Failed to fetch orders", error: err.message });
+    }
+});
+
+// --- FIX: ENHANCED CHECKOUT ENDPOINT ---
+app.post("/api/checkout", async (req, res) => {
+    console.log("🛒 CHECKOUT REQUEST RECEIVED:", req.body);
+    
+    try {
+        const {
+            user_id,
+            user_email,
+            items,
+            total_amount,
+            delivery_address,
+            delivery_time,
+            payment_method,
+            notes,
+            customer_name,
+            phone
+        } = req.body;
+
+        // Validate required fields
+        if (!user_id || !user_email || !items || !total_amount || !delivery_address) {
+            return res.status(400).json({ 
+                success: false, 
+                message: "Missing required fields",
+                received: req.body 
+            });
+        }
+
+        // Get user's name from profile if not provided
+        let user_name = customer_name || "";
+        if (!user_name) {
+            try {
+                const userProfile = await UserProfile.findOne({ user_id: user_id });
+                user_name = userProfile ? userProfile.name : "";
+                console.log(`👤 Found user name from profile: ${user_name}`);
+            } catch (err) {
+                console.log("⚠️ Could not fetch user name from profile:", err);
+            }
+        }
+
+        // Create order in database
+        const order = new Order({
+            user_id: user_id,
+            user_email: user_email,
+            user_name: user_name,
+            items: items,
+            total_amount: total_amount,
+            delivery_address: delivery_address,
+            delivery_time: delivery_time || "ASAP",
+            payment_method: payment_method || "Cash on Delivery",
+            notes: notes || "",
+            status: 'pending'
+        });
+
+        await order.save();
+        
+        console.log(`✅ Order created in database: ${order._id}`);
+        console.log(`📦 Order saved with name: ${user_name || 'No name'}`);
+
+        // Also create Checkout record for redundancy
+        const checkout = new Checkout({
+            user_id: user_id,
+            user_email: user_email,
+            items: items,
+            total_amount: total_amount,
+            delivery_address: delivery_address,
+            delivery_time: delivery_time || "ASAP",
+            payment_method: payment_method || "Cash on Delivery",
+            notes: notes || ""
+        });
+        await checkout.save();
+
+        // Clear user's cart
+        await Cart.findOneAndDelete({ user_id: user_id });
+
+        res.json({
+            success: true,
+            message: "Order created successfully",
+            order_id: order._id,
+            order: {
+                _id: order._id,
+                user_name: user_name,
+                total_amount: total_amount,
+                status: order.status
+            }
+        });
+
+    } catch (err) {
+        console.error("❌ Checkout error:", err);
+        res.status(500).json({ 
+            success: false, 
+            message: "Database error during checkout",
+            error: err.message 
+        });
+    }
+});
+
+// --- FIX: ENHANCED ORDERS ENDPOINT ---
+app.post("/api/orders", async (req, res) => {
+    console.log("📝 ORDERS API REQUEST:", req.body);
+    
+    try {
+        const {
+            user_id,
+            user_email,
+            user_name,
+            items,
+            total_amount,
+            delivery_address,
+            delivery_time,
+            payment_method,
+            notes
+        } = req.body;
+
+        // Validate required fields
+        if (!user_id || !user_email || !items || !total_amount || !delivery_address) {
+            return res.status(400).json({ 
+                success: false, 
+                message: "Missing required fields",
+                received: req.body 
+            });
+        }
+
+        // Get user name from profile if not provided
+        let final_user_name = user_name || "";
+        if (!final_user_name) {
+            try {
+                const userProfile = await UserProfile.findOne({ user_id: user_id });
+                final_user_name = userProfile ? userProfile.name : "";
+                console.log(`👤 Orders API: Found user name from profile: ${final_user_name}`);
+            } catch (err) {
+                console.log("⚠️ Orders API: Could not fetch user name:", err);
+            }
+        }
+
+        // Create order
+        const order = new Order({
+            user_id: user_id,
+            user_email: user_email,
+            user_name: final_user_name,
+            items: items,
+            total_amount: total_amount,
+            delivery_address: delivery_address,
+            delivery_time: delivery_time || "ASAP",
+            payment_method: payment_method || "Cash on Delivery",
+            notes: notes || "",
+            status: 'pending'
+        });
+
+        await order.save();
+        
+        console.log(`✅ Order created via /api/orders: ${order._id}`);
+
+        res.json({
+            success: true,
+            message: "Order created successfully",
+            order_id: order._id,
+            order: order
+        });
+
+    } catch (err) {
+        console.error("❌ Orders API error:", err);
+        res.status(500).json({ 
+            success: false, 
+            message: "Database error",
+            error: err.message 
+        });
+    }
 });
