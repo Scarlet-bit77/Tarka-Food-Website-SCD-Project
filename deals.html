@@ -5,10 +5,122 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Deals - TARKA</title>
     <link rel="stylesheet" href="deals.css">
-      <link rel="stylesheet" href="keyboardnavi.css">
-      <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="sidenav.css">
+    <link rel="stylesheet" href="keyboardnavi.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <!-- <link rel="stylesheet" href="contrast.css"> -->
+     <link rel="stylesheet" href="chatbox.css">
 </head>
 <body>
+
+<!-- Chatbox HTML -->
+<div class="ai-chat-btn AI_Assistant" title="Chat with Tarka Bot">
+    💬
+</div>
+<div id="ai-panel-overlay"></div>
+
+<!-- SIDE AI ASSISTANT PANEL -->
+<div id="ai-side-panel">
+   <div id="ai-panel-header">
+    Tarka Bot <span id="ai-panel-close">✖</span>
+   </div>
+   <div id="ai-panel-messages">
+    <div class="ai-welcome-message">
+        <!-- <span class="icon">🍔</span> -->
+     <h3>Welcome to Tarka Bot</h3>
+     <p>I'm here to help you explore our menu, browse burgers, pizzas, naan, curry, place your order, and enjoy delicious food!</p>
+     <div class="ai-quick-actions">
+      <div class="ai-quick-action" onclick="sendQuickMessage('What is delivery time?')">
+       ⏰ What is the delivery time?
+      </div>
+      <div class="ai-quick-action" onclick="sendQuickMessage('Show me popular dishes')">
+       🍔 Show me popular dishes
+      </div>
+      <div class="ai-quick-action" onclick="sendQuickMessage('How can I place an order?')">
+       🛒 How can I place an order?
+      </div>
+      <div class="ai-quick-action" onclick="sendQuickMessage('Do you have vegetarian options?')">
+       🌱 Do you have vegetarian options?
+      </div>
+     </div>
+    </div>
+   </div>
+   <div id="ai-panel-input-container">
+     <input id="ai-panel-input" type="text" placeholder="Ask Tarka Bot..." aria-label="AI Assistant input"> 
+     <button id="ai-panel-send-btn" aria-label="Send message">Send</button>
+   </div>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     <!-- Animated Background -->
     <div class="bg-animation">
@@ -18,60 +130,55 @@
         <div class="floating-shape"></div>
     </div>
 
-    <!-- Navigation Section -->
-    <nav class="navbar">
-        <div class="container">
-            <div class="nav-content">
-                <a href="home.html" class="logo">
-                    <img src="logo (2).png" alt="Tarka Logo" class="logo-img"> TARKA
-                </a>
-                <ul class="nav-links">
-                    <li><a href="home.html"><i class="fa-solid fa-house"></i> Home</a></li>
-                    <li><a href="about.html"><i class="fa-solid fa-circle-info"></i> About Us</a></li>
-                    <li><a href="menu.html"><i class="fa-solid fa-utensils"></i> Menu</a></li>
-                    <li><a href="deals.html"><i class="fa-solid fa-tags"></i> Deals</a></li>
+    <!-- Header with Menu Toggle (SAME AS LOGIN.HTML) -->
+    <div class="header">
+        <button class="menu-toggle" id="menuToggle">
+            <i class="fas fa-bars"></i>
+        </button>
+        <a href="home.html" class="logo">
+            TARKA
+        </a>
+        <div style="width: 40px;"></div> <!-- Spacer for alignment -->
+    </div>
 
-                    <li>
-                        <a href="cart.html">
-                            <i class="fa-solid fa-cart-shopping"></i>
-                            Cart (<span id="cart-count">0</span>)
-                        </a>
-                    </li>
-                    <li><a href="tracking.html"><i class="fa-solid fa-location-dot"></i> Track Order</a></li>
-                   <li><a href="contactus.html"><i class="fas fa-envelope"></i>Contact Us </a></li>
-                    <li id="auth-nav-item">
-    <a href="login.html" class="btn btn-primary" id="auth-button">Login</a>
-</li>
-
-<script>
-// JavaScript (in all pages)
-function updateNavigation() {
-    const authButton = document.getElementById('auth-button');
-    if (!authButton) return;
-    
-    if (checkUserLoggedIn()) {
-        authButton.textContent = 'Logout';
-        authButton.href = '#';
-        authButton.onclick = function(e) {
-            e.preventDefault();
-            setUserLoggedIn(false);
-            localStorage.removeItem('tarkaCart');
-            localStorage.removeItem('tarkaCurrentOrder');
-            window.location.href = 'welcome.html'; // Changed to welcome.html
-        };
-    } else {
-        authButton.textContent = 'Login';
-        authButton.href = 'login.html';
-        authButton.onclick = null;
-    }
-}
-
-document.addEventListener('DOMContentLoaded', updateNavigation);
-</script>
-                </ul>
-            </div>
+    <!-- Side Navigation (SAME AS LOGIN.HTML) -->
+    <div class="side-nav" id="sideNav">
+        <div class="nav-header">
+            <a href="home.html" class="nav-logo">
+                <img src="logo (2).png" alt="Tarka Logo" class="nav-logo-img">
+                <span>TARKA</span>
+            </a>
         </div>
-    </nav>
+        
+        <ul class="nav-links">
+            <li><a href="home.html"><i class="fa-solid fa-house"></i> Home</a></li>
+            <li><a href="menu.html"><i class="fa-solid fa-utensils"></i> Menu</a></li>
+            <li>
+                <a href="cart.html">
+                    <i class="fa-solid fa-cart-shopping"></i>
+                    Cart <span class="cart-count" id="side-cart-count">0</span>
+                </a>
+            </li>
+            <li><a href="tracking.html"><i class="fa-solid fa-location-dot"></i> Track Order</a></li>
+            <li><a href="userp.html" id="side-profile-link"><i class="fa-solid fa-user"></i> Profile</a></li>
+            <li><a href="orders.html"><i class="fa-solid fa-receipt"></i> My Orders</a></li>
+            <li><a href="deals.html" class="active"><i class="fa-solid fa-tags"></i> Deals</a></li>
+            <li><a href="favourites.html"><i class="fas fa-heart"></i> Favorites</a></li>
+            <li><a href="contactus.html"><i class="fas fa-envelope"></i> Contact Us</a></li>
+            <li><a href="about.html"><i class="fa-solid fa-circle-info"></i> About Us</a></li>
+        </ul>
+        
+        <div class="nav-footer">
+            <div class="user-info" id="side-user-info" style="display: none;">
+                <i class="fas fa-user-circle"></i>
+                <span id="side-user-name">Loading...</span>
+            </div>
+            <a href="login.html" class="auth-btn" id="side-auth-button">Login</a>
+        </div>
+    </div>
+
+    <!-- Navigation Overlay -->
+    <div class="nav-overlay" id="navOverlay"></div>
 
     <!-- Deals Page Content -->
     <div class="page-content active" id="deals-page"
@@ -145,61 +252,63 @@ document.addEventListener('DOMContentLoaded', updateNavigation);
                         </div>
                     </div>
                 </div>
-<!-- Special Combo Section -->
-<div class="special-combo">
-    <div class="combo-header">
-        <h3><i class="fas fa-crown"></i> Desi Delight Combo</h3>
-        <span class="combo-badge">Desi Lovers</span>
-    </div>
-    <div class="combo-content">
-        <div class="combo-image">
-            <img src="https://static.vecteezy.com/system/resources/thumbnails/030/624/737/small/indian-food-pork-curry-rogan-josh-with-rice-and-na-free-photo.jpg" alt="Desi Combo">
-        </div>
-        <div class="combo-details">
-            <h4>Classic Desi Feast</h4>
-            <p class="combo-description">
-                Includes: Chicken Karahi, 2 Butter Naan, Fresh Salad, and Raita.
-                A perfect choice for traditional food lovers.
-            </p>
-            <div class="combo-price">
-                <span class="original-price">Rs 3000</span>
-                <span class="discounted-price">Rs 2300</span>
-                <span class="discount-tag">Save 23%</span>
-            </div>
-            <button class="btn btn-primary combo-btn">Add Combo to Cart</button>
-        </div>
-    </div>
-</div>
+                
+                <!-- Special Combo Section -->
+                <div class="special-combo">
+                    <div class="combo-header">
+                        <h3><i class="fas fa-crown"></i> Desi Delight Combo</h3>
+                        <span class="combo-badge">Desi Lovers</span>
+                    </div>
+                    <div class="combo-content">
+                        <div class="combo-image">
+                            <img src="https://static.vecteezy.com/system/resources/thumbnails/030/624/737/small/indian-food-pork-curry-rogan-josh-with-rice-and-na-free-photo.jpg" alt="Desi Combo">
+                        </div>
+                        <div class="combo-details">
+                            <h4>Classic Desi Feast</h4>
+                            <p class="combo-description">
+                                Includes: Chicken Karahi, 2 Butter Naan, Fresh Salad, and Raita.
+                                A perfect choice for traditional food lovers.
+                            </p>
+                            <div class="combo-price">
+                                <span class="original-price">Rs 3000</span>
+                                <span class="discounted-price">Rs 2300</span>
+                                <span class="discount-tag">Save 23%</span>
+                            </div>
+                            <button class="btn btn-primary combo-btn">Add Combo to Cart</button>
+                        </div>
+                    </div>
+                </div>
 
-<!-- Special Combo Section -->
-<div class="special-combo">
-    <div class="combo-header">
-        <h3><i class="fas fa-crown"></i> Halwa Puri Breakfast Combo</h3>
-        <span class="combo-badge">Morning Special</span>
-    </div>
-    <div class="combo-content">
-        <div class="combo-image">
-            <img src="https://t3.ftcdn.net/jpg/15/56/87/62/360_F_1556876234_7wOrnuDkCwK9nJP4f6rSghMJOIfT35kr.jpg" alt="Halwa Puri Breakfast">
-        </div>
-        <div class="combo-details">
-            <h4>Delicious Halwa Puri Breakfast</h4>
-            <p class="combo-description">
-                Includes: Fluffy Puris, Sweet Halwa, Spicy Chana, and a cup of Hot Chai.
-                Perfect way to start your morning with energy and taste!
-            </p>
-            <div class="combo-price">
-                <span class="original-price">Rs 700</span>
-                <span class="discounted-price">Rs 525</span>
-                <span class="discount-tag">Save 25%</span>
+                <!-- Special Combo Section -->
+                <div class="special-combo">
+                    <div class="combo-header">
+                        <h3><i class="fas fa-crown"></i> Halwa Puri Breakfast Combo</h3>
+                        <span class="combo-badge">Morning Special</span>
+                    </div>
+                    <div class="combo-content">
+                        <div class="combo-image">
+                            <img src="https://t3.ftcdn.net/jpg/15/56/87/62/360_F_1556876234_7wOrnuDkCwK9nJP4f6rSghMJOIfT35kr.jpg" alt="Halwa Puri Breakfast">
+                        </div>
+                        <div class="combo-details">
+                            <h4>Delicious Halwa Puri Breakfast</h4>
+                            <p class="combo-description">
+                                Includes: Fluffy Puris, Sweet Halwa, Spicy Chana, and a cup of Hot Chai.
+                                Perfect way to start your morning with energy and taste!
+                            </p>
+                            <div class="combo-price">
+                                <span class="original-price">Rs 700</span>
+                                <span class="discounted-price">Rs 525</span>
+                                <span class="discount-tag">Save 25%</span>
+                            </div>
+                            <button class="btn btn-primary combo-btn">Add Combo to Cart</button>
+                        </div>
+                    </div>
+                </div>
             </div>
-            <button class="btn btn-primary combo-btn">Add Combo to Cart</button>
         </div>
     </div>
-</div>
-  </div>
-        </div>
-    </div>
-!-- Footer Section -->
+
+    <!-- Footer Section -->
     <footer class="footer">
         <div class="container">
             <div class="footer-content">
@@ -210,7 +319,7 @@ document.addEventListener('DOMContentLoaded', updateNavigation);
                        premium food delivery service.</p>
                 </div>
 
-   <div class="footer-section">
+                <div class="footer-section">
                     <h3>Quick Links</h3>
                     <p><a href="menu.html" style="color: var(--text-light); text-decoration: none;">Menu</a></p>
                     <p><a href="tracking.html" style="color: var(--text-light); text-decoration: none;">Track Order</a></p>
@@ -224,7 +333,7 @@ document.addEventListener('DOMContentLoaded', updateNavigation);
                     <h3>Contact</h3>
                     <p>📞 +92 345 1234567</p>
                     <p>📧 support@tarka.com</p>
-                    <p> <i class="fas fa-map-marker-alt"style="color:red";></i> 2000 Tipu Sultan Rd, I-8 Markaz, Islamabad</p>
+                    <p> <i class="fas fa-map-marker-alt" style="color:red;"></i> 2000 Tipu Sultan Rd, I-8 Markaz, Islamabad</p>
                 </div>
             </div>
 
@@ -233,7 +342,211 @@ document.addEventListener('DOMContentLoaded', updateNavigation);
             </div>
         </div>
     </footer>
+    
+    <!-- <button class="contrast-btn" id="contrastBtn" aria-label="Toggle High Contrast"> <i class="fas fa-adjust"></i> </button> -->
+  
+    <!-- JavaScript -->
+    <script src="script.js"></script>
+<script src="chatbox.js"></script>
+    <!-- SIDE NAVIGATION SCRIPT (SAME AS LOGIN.HTML) -->
+    <script>
+    // ===== SIDE NAVIGATION FUNCTIONALITY =====
+    const menuToggle = document.getElementById('menuToggle');
+    const sideNav = document.getElementById('sideNav');
+    const navOverlay = document.getElementById('navOverlay');
 
-<script src="script.js"></script>
+    // Toggle side navigation
+    if (menuToggle && sideNav && navOverlay) {
+        menuToggle.addEventListener('click', function() {
+            sideNav.classList.toggle('active');
+            navOverlay.classList.toggle('active');
+        });
+
+        // Close side navigation when clicking overlay
+        navOverlay.addEventListener('click', function() {
+            sideNav.classList.remove('active');
+            navOverlay.classList.remove('active');
+        });
+
+        // Close side navigation when clicking ESC key
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape' && sideNav.classList.contains('active')) {
+                sideNav.classList.remove('active');
+                navOverlay.classList.remove('active');
+            }
+        });
+    }
+
+    // ===== BACKEND-ENABLED AUTH FUNCTIONS =====
+    const API_BASE_URL = 'http://localhost:3000';
+
+    function checkUserLoggedIn() {
+        const userId = localStorage.getItem('userId');
+        const userEmail = localStorage.getItem('userEmail');
+        return !!(userId && userEmail);
+    }
+
+    async function setUserLoggedIn(status) {
+        if (!status) {
+            // Logout - clear all local storage
+            localStorage.removeItem('userId');
+            localStorage.removeItem('userEmail');
+            localStorage.removeItem('userData');
+            localStorage.removeItem('isLoggedIn');
+            localStorage.removeItem('loginCount');
+            
+            // Optionally call backend logout endpoint if you have one
+            try {
+                await fetch(`${API_BASE_URL}/logout`, { method: 'POST' });
+            } catch (error) {
+                console.log('Backend logout optional');
+            }
+        } else {
+            localStorage.setItem('isLoggedIn', 'true');
+        }
+    }
+
+    async function updateSideNavigation() {
+        const sideAuthButton = document.getElementById('side-auth-button');
+        const sideUserInfo = document.getElementById('side-user-info');
+        const sideUserName = document.getElementById('side-user-name');
+        const sideProfileLink = document.getElementById('side-profile-link');
+        
+        if (checkUserLoggedIn()) {
+            const userEmail = localStorage.getItem('userEmail') || '';
+            const userName = userEmail.split('@')[0] || 'User';
+            
+            sideUserInfo.style.display = 'block';
+            sideUserName.textContent = userName;
+            sideProfileLink.innerHTML = `<i class="fa-solid fa-user"></i> ${userName}`;
+            sideAuthButton.textContent = 'Logout';
+            sideAuthButton.href = '#';
+            sideAuthButton.onclick = async function(e) {
+                e.preventDefault();
+                await setUserLoggedIn(false);
+                localStorage.removeItem('tarkaCart');
+                localStorage.removeItem('tarkaCurrentOrder');
+                window.location.href = 'login.html';
+            };
+            
+            // Optional: Fetch user data from backend
+            try {
+                const userId = localStorage.getItem('userId');
+                if (userId) {
+                    const response = await fetch(`${API_BASE_URL}/user/${userId}`);
+                    if (response.ok) {
+                        const userData = await response.json();
+                        if (userData.success) {
+                            localStorage.setItem('userData', JSON.stringify(userData.user));
+                        }
+                    }
+                }
+            } catch (error) {
+                console.log('Optional: Could not fetch user details');
+            }
+        } else {
+            sideUserInfo.style.display = 'none';
+            sideProfileLink.innerHTML = `<i class="fa-solid fa-user"></i> Profile`;
+            sideAuthButton.textContent = 'Login';
+            sideAuthButton.href = 'login.html';
+            sideAuthButton.onclick = null;
+        }
+    }
+
+    // === BACKEND HEALTH CHECK ===
+    async function checkBackendHealth() {
+        try {
+            const response = await fetch(`${API_BASE_URL}/`, { 
+                method: 'GET',
+                headers: { 'Content-Type': 'application/json' }
+            });
+            return response.ok;
+        } catch (error) {
+            console.warn('Backend is not running. Using fallback mode.');
+            return false;
+        }
+    }
+
+    // Update cart count
+    function updateCartCount() {
+        const cartItems = JSON.parse(localStorage.getItem('tarkaCart') || '[]');
+        const totalItems = cartItems.reduce((total, item) => total + (item.quantity || 1), 0);
+        
+        const sideCartCount = document.getElementById('side-cart-count');
+        if (sideCartCount) {
+            sideCartCount.textContent = totalItems;
+        }
+    }
+
+    // Initialize on page load
+    document.addEventListener('DOMContentLoaded', async function() {
+        const isBackendRunning = await checkBackendHealth();
+        
+        if (!isBackendRunning) {
+            console.log('Running in offline/fallback mode');
+        }
+        
+        updateSideNavigation();
+        updateCartCount();
+    });
+    </script>
+    <script>
+// Get all combo buttons
+const comboButtons = document.querySelectorAll('.combo-btn');
+
+comboButtons.forEach(button => {
+    button.addEventListener('click', async () => {
+        // Check if user is logged in
+        const userId = localStorage.getItem('userId');
+        if (!userId) {
+            // alert('Please log in to add items to your cart!');
+            window.location.href = 'login.html';
+            return;
+        }
+
+        // Get combo details from DOM
+        const comboDetails = button.closest('.combo-details');
+        const name = comboDetails.querySelector('h4').textContent;
+        const description = comboDetails.querySelector('.combo-description').textContent;
+        const priceText = comboDetails.querySelector('.discounted-price').textContent;
+        const price = parseInt(priceText.replace(/[^0-9]/g, '')); // Extract number
+        const image = comboDetails.closest('.combo-content').querySelector('img').src;
+
+        // Create item object
+        const item = {
+            product_id: name.replace(/\s+/g, '-').toLowerCase(), // simple id
+            name,
+            price,
+            quantity: 1,
+            image,
+            total: price
+        };
+
+        try {
+            const response = await fetch('http://localhost:3000/api/cart/add', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    user_id: userId,
+                    item
+                })
+            });
+
+            const result = await response.json();
+            if (result.success) {
+                alert(`${name} added to cart!`);
+                // Update cart count
+                updateCartCount();
+            } else {
+                alert('Failed to add to cart.');
+            }
+        } catch (err) {
+            console.error(err);
+            alert('Error connecting to backend.');
+        }
+    });
+});
+</script>
+
 </body>
 </html>
